@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Skrivni Božiček žrebanje</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=DM+Sans:wght@400;500;700&family=Caveat:wght@600&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* Svetla, ploska, kot tiskan katalog: bel papir, ena rdeča, ena zelena, črn tisk. Brez senc in prelivov. */
+  --paper:#ffffff;
+  --sand:#f3ece0;
+  --ink:#17130f;
+  --soft:#6a6259;
+  --red:#d6281b;
+  --green:#0f4a37;
+  --yellow:#ffc83d;
+  --rule:#17130f;
+  --display:"Bricolage Grotesque","Arial Narrow",Arial,sans-serif;
+  --body:"DM Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --hand:"Caveat","Bradley Hand","Segoe Print",cursive;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--paper);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.5;overflow-x:hidden}
+.hidden{display:none!important}
+.wrap{max-width:1180px;margin:0 auto;padding:0 24px}
+button{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--yellow);outline-offset:2px}
+h1,h2,h3{font-family:var(--display);font-weight:800;margin:0;letter-spacing:-.02em;text-wrap:balance}
+h1{font-size:clamp(2.7rem,7vw,5.4rem);line-height:.95}
+h2{font-size:clamp(2rem,4.6vw,3.4rem);line-height:1}
+h3{font-size:1.3rem;line-height:1.15;letter-spacing:-.01em}
+p{margin:0}
+.lede{font-size:1.15rem;max-width:50ch}
+.hand{font-family:var(--hand);font-size:1.5rem;line-height:1.1}
+section{padding:84px 0}
+@media (max-width:760px){section{padding:56px 0}}
+.head{display:grid;gap:14px;margin-bottom:40px;max-width:760px}
+
+.strip{background:var(--green);color:#fff;font-size:.88rem;text-align:center;padding:8px 16px}
+.nav{border-bottom:1.5px solid var(--rule);background:var(--paper);position:sticky;top:0;z-index:20}
+.nav .wrap{display:flex;justify-content:space-between;align-items:center;height:62px;gap:12px}
+.logo{font-family:var(--display);font-weight:800;font-size:1.35rem;letter-spacing:-.03em;background:none;border:0;padding:0;cursor:pointer}
+.logo span{color:var(--red)}
+.links{display:flex;align-items:center;gap:22px}
+.links button.t{background:none;border:0;padding:0;cursor:pointer;font-weight:500;font-size:.95rem;text-decoration:underline transparent;text-underline-offset:5px}
+.links button.t:hover{text-decoration-color:var(--ink)}
+@media (max-width:820px){.links .t{display:none}}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;font-weight:700;border-radius:6px;padding:12px 20px;cursor:pointer;border:1.5px solid var(--ink);background:var(--paper);color:var(--ink);text-decoration:none}
+.btn:hover:not(:disabled){background:var(--ink);color:var(--paper)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn.k{background:var(--ink);color:var(--paper)}
+.btn.k:hover{background:var(--red);border-color:var(--red)}
+.btn.r{background:var(--red);border-color:var(--red);color:#fff;font-size:1.05rem;padding:15px 26px}
+.btn.r:hover{background:var(--ink);border-color:var(--ink)}
+.btn.w{background:#fff;border-color:#fff;color:var(--ink);font-size:1.05rem;padding:15px 26px}
+.btn.w:hover{background:var(--ink);border-color:var(--ink);color:#fff}
+.btn.sm{padding:8px 13px;font-size:.88rem}
+.btn.wide{width:100%}
+.tlink{background:none;border:0;padding:0;cursor:pointer;font-weight:700;text-decoration:underline;text-underline-offset:5px;text-decoration-thickness:2px}
+
+/* Naslovnica */
+.hero{background:var(--red);color:#fff;padding:64px 0 0}
+.hero .wrap{display:grid;grid-template-columns:1.15fr .85fr;gap:40px;align-items:end}
+@media (max-width:900px){.hero .wrap{grid-template-columns:1fr}}
+.hero-copy{display:grid;gap:26px;padding-bottom:64px}
+.hero-cta{display:flex;flex-wrap:wrap;gap:18px 24px;align-items:center}
+.hero .tlink{color:#fff}
+.photo{position:relative;justify-self:center;width:min(100%,360px);margin-bottom:-46px;transform:rotate(2.5deg)}
+.polaroid{background:#fff;padding:14px 14px 0;border:1.5px solid var(--ink)}
+.polaroid .img{aspect-ratio:708/1049;background:var(--sand);display:grid;place-items:center;overflow:hidden}
+.polaroid img{width:100%;height:100%;object-fit:cover;display:block}
+.polaroid .ph{color:var(--soft);text-align:center;padding:24px;font-size:.92rem;border:1.5px dashed var(--soft);margin:18px;align-self:stretch;display:grid;place-items:center}
+.polaroid .cap{color:var(--ink);text-align:center;padding:10px 0 14px}
+.sticker{position:absolute;left:-40px;bottom:110px;background:var(--yellow);color:var(--ink);border:1.5px solid var(--ink);border-radius:50%;width:112px;height:112px;display:grid;place-items:center;text-align:center;font-family:var(--display);font-weight:800;line-height:1;font-size:1.02rem;transform:rotate(-12deg)}
+.sticker b{display:block;font-size:2rem}
+@media (max-width:520px){.sticker{left:-10px;width:92px;height:92px;font-size:.85rem}.sticker b{font-size:1.6rem}}
+
+/* Koraki */
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border-top:1.5px solid var(--rule)}
+.steps>div{padding:26px 26px 6px 0;display:grid;gap:10px;align-content:start}
+.steps>div+div{padding-left:26px;border-left:1.5px solid var(--rule)}
+.steps .n{font-family:var(--display);font-weight:800;font-size:4rem;line-height:.9;color:var(--red)}
+.steps p{color:var(--soft)}
+@media (max-width:820px){.steps{grid-template-columns:1fr}.steps>div+div{padding-left:0;border-left:0;border-top:1.5px solid var(--rule)}}
+
+/* Žrebanje */
+.tool{background:var(--sand);border-block:1.5px solid var(--rule)}
+.tool-grid{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:24px;align-items:start}
+@media (max-width:900px){.tool-grid{grid-template-columns:1fr}}
+.stack{display:grid;gap:18px}
+.card{background:var(--paper);border:1.5px solid var(--rule);border-radius:8px;padding:24px}
+.card-h{display:flex;align-items:baseline;gap:10px;margin-bottom:16px}
+.card-h .k{font-family:var(--display);font-weight:800;color:var(--red)}
+.card-h .aside{margin-left:auto;color:var(--soft);font-size:.88rem}
+label{display:block;font-size:.84rem;font-weight:700;margin-bottom:5px}
+input,select{width:100%;font:inherit;color:var(--ink);background:var(--paper);border:1.5px solid #b9b0a3;border-radius:6px;padding:10px 12px}
+input::placeholder{color:#a39a8d}
+input:focus,select:focus{outline:none;border-color:var(--ink);box-shadow:0 0 0 3px var(--yellow)}
+.row3{display:grid;grid-template-columns:2fr 1fr 1.3fr;gap:12px}
+@media (max-width:560px){.row3{grid-template-columns:1fr 1fr}.row3>div:first-child{grid-column:1/-1}}
+.people{display:grid;gap:8px}
+.person{display:grid;grid-template-columns:24px minmax(0,1fr) minmax(0,1.5fr) 42px;gap:8px;align-items:center}
+@media (max-width:560px){.person{grid-template-columns:20px 1fr 42px}.person .wish{grid-column:2/3}}
+.num{font-family:var(--display);font-weight:800;text-align:right;color:var(--soft)}
+.del{width:42px;height:44px;border-radius:6px;border:1.5px solid #b9b0a3;background:var(--paper);cursor:pointer;font-size:1.1rem}
+.del:hover{background:var(--red);border-color:var(--red);color:#fff}
+.bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin-top:14px}
+.excl-add{display:grid;grid-template-columns:1fr auto 1fr auto;gap:8px;align-items:center}
+@media (max-width:560px){.excl-add{grid-template-columns:1fr 1fr}.excl-add .x{display:none}}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.chip{display:inline-flex;gap:4px;align-items:center;background:var(--yellow);border:1.5px solid var(--ink);border-radius:6px;padding:4px 4px 4px 12px;font-size:.92rem;font-weight:500}
+.chip button{border:0;background:transparent;cursor:pointer;font-size:1rem;padding:0 8px}
+.note{font-size:.9rem;color:var(--soft);margin-top:12px}
+.warn{font-size:.92rem;margin-top:12px;background:var(--yellow);padding:10px 12px;border-radius:6px}
+.err{font-size:.92rem;color:var(--red);font-weight:700;margin-top:10px;min-height:1.2em}
+.paid{font-size:.74rem;font-weight:700;background:var(--ink);color:#fff;border-radius:4px;padding:2px 7px;white-space:nowrap}
+.side{position:sticky;top:82px;display:grid;gap:18px}
+.summary{background:var(--green);color:#fff;border-color:var(--green)}
+.sum{list-style:none;margin:14px 0 18px;padding:0}
+.sum li{display:flex;justify-content:space-between;gap:10px;padding:9px 0;border-top:1px solid rgba(255,255,255,.25);font-size:.95rem}
+.sum b{text-align:right;overflow-wrap:anywhere}
+.summary .err{color:var(--yellow)}
+.summary .fine{font-size:.84rem;opacity:.8;text-align:center;margin-top:10px}
+.results{display:grid;gap:8px;margin-top:14px}
+.res{display:grid;grid-template-columns:minmax(90px,150px) minmax(0,1fr) auto auto;gap:8px;align-items:center;border-top:1.5px solid var(--rule);padding-top:8px}
+@media (max-width:640px){.res{grid-template-columns:1fr 1fr}.res .who,.res input{grid-column:1/-1}}
+.res .who{font-family:var(--display);font-weight:800;font-size:1.15rem}
+.res input{font-size:.8rem;color:var(--soft);padding:8px 10px}
+
+/* Koledar - napoved */
+.advent{background:var(--green);color:#fff}
+.advent .wrap{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center}
+@media (max-width:860px){.advent .wrap{grid-template-columns:1fr}}
+.advent .copy{display:grid;gap:20px;justify-items:start}
+.mini{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;transform:rotate(-2deg)}
+.mini div{aspect-ratio:1;display:grid;place-items:center;font-family:var(--display);font-weight:800;font-size:clamp(1.6rem,4vw,2.6rem);border:1.5px solid var(--ink);border-radius:6px;color:var(--ink)}
+
+/* Darila */
+.tabs{display:flex;gap:26px;border-bottom:1.5px solid var(--rule)}
+.tabs button{border:0;background:none;padding:10px 0;cursor:pointer;font-weight:700;color:var(--soft);border-bottom:4px solid transparent;margin-bottom:-1.5px}
+.tabs button[aria-pressed="true"]{color:var(--ink);border-bottom-color:var(--red)}
+.gifts{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:28px}
+@media (max-width:980px){.gifts{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:440px){.gifts{grid-template-columns:1fr}}
+.gift{position:relative;border:1.5px solid var(--rule);border-radius:8px;padding:44px 18px 18px;background:var(--paper);display:grid;gap:6px;align-content:start;min-height:190px;text-decoration:none;color:inherit}
+.gift::before{content:"";position:absolute;left:16px;top:14px;width:14px;height:14px;border-radius:50%;border:1.5px solid var(--rule);background:var(--sand)}
+.gift .cat{font-size:.82rem;color:var(--soft)}
+.gift h4{margin:0;font-family:var(--display);font-weight:800;font-size:1.25rem;line-height:1.1;letter-spacing:-.01em}
+.gift .price{font-family:var(--display);font-weight:800;font-size:1.5rem;color:var(--red);margin-top:auto;font-variant-numeric:tabular-nums}
+.gift .mark{position:absolute;right:14px;top:8px;transform:rotate(4deg);color:var(--soft)}
+.gift .mark.p{color:var(--green)}
+a.gift:hover{background:var(--sand)}
+.gift.slot{background:var(--yellow)}
+.gift.slot::before{background:var(--paper)}
+.gift.slot .btn{justify-self:start;margin-top:auto}
+
+/* Podjetja */
+.biz{display:grid;grid-template-columns:repeat(3,1fr);border-top:1.5px solid var(--rule)}
+.biz>div{padding:28px 26px 0 0;display:grid;gap:12px;align-content:start}
+.biz>div+div{padding-left:26px;border-left:1.5px solid var(--rule)}
+@media (max-width:900px){.biz{grid-template-columns:1fr}.biz>div{padding-bottom:28px}.biz>div+div{padding-left:0;border-left:0;border-top:1.5px solid var(--rule)}}
+.biz ul{margin:0;padding-left:20px;color:var(--soft);display:grid;gap:6px}
+.biz .price{font-family:var(--display);font-weight:800;font-size:2.6rem;line-height:1;color:var(--red)}
+.biz .price small{font-family:var(--body);font-size:.9rem;font-weight:500;color:var(--soft);margin-left:6px}
+.contact{margin-top:36px;border:1.5px solid var(--rule);border-radius:8px;padding:20px 24px;display:flex;flex-wrap:wrap;gap:10px 24px;justify-content:space-between;align-items:center;background:var(--sand)}
+
+details{border-top:1.5px solid var(--rule)}
+details:last-of-type{border-bottom:1.5px solid var(--rule)}
+summary{cursor:pointer;list-style:none;display:flex;justify-content:space-between;gap:16px;padding:18px 0;font-family:var(--display);font-weight:800;font-size:1.25rem}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"+";font-weight:600}
+details[open] summary::after{content:"–"}
+details p{padding:0 0 20px;color:var(--soft);max-width:62ch}
+footer{background:var(--ink);color:#fff;padding:34px 0;font-size:.9rem}
+footer .wrap{display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between}
+
+/* Koledar */
+.cal{background:var(--sand);min-height:100vh;padding-bottom:80px}
+.cal-top{padding:40px 0 30px;display:grid;gap:16px}
+.banner{background:var(--yellow);border:1.5px solid var(--ink);border-radius:6px;padding:10px 14px;font-size:.95rem;justify-self:start}
+.doors{display:grid;grid-template-columns:repeat(6,1fr);grid-auto-flow:dense;gap:12px}
+@media (max-width:820px){.doors{grid-template-columns:repeat(3,1fr);gap:8px}}
+.door{aspect-ratio:1;border:1.5px solid var(--ink);border-radius:6px;cursor:pointer;display:grid;align-content:space-between;justify-items:start;padding:10px 12px;font-family:var(--display);font-weight:800;font-size:clamp(1.8rem,4.6vw,3.2rem);line-height:1;text-align:left;transition:transform .15s}
+.door:hover:not(:disabled){transform:rotate(-2deg)}
+.door.wide{grid-column:span 2;aspect-ratio:auto}
+.door.big{grid-column:span 2;grid-row:span 2;aspect-ratio:auto;font-size:clamp(3.4rem,10vw,7rem)}
+.door small{font-family:var(--body);font-weight:500;font-size:.8rem;line-height:1.2}
+.door.c0{background:var(--red);color:#fff}.door.c1{background:var(--green);color:#fff}.door.c2{background:var(--yellow)}.door.c3{background:var(--paper)}.door.c4{background:var(--ink);color:#fff}
+.door:disabled{cursor:not-allowed;background:transparent;color:#b3a998;border-style:dashed;border-color:#b3a998}
+.door.open{background:var(--paper);color:var(--ink);border-style:dashed}
+.door.open small{color:var(--red);font-weight:700}
+@media (prefers-reduced-motion:reduce){.door{transition:none}}
+.modal{position:fixed;inset:0;background:rgba(23,19,15,.6);display:grid;place-items:center;padding:20px;z-index:40}
+.sheet{background:var(--paper);border:1.5px solid var(--ink);border-radius:10px;max-width:420px;width:100%;padding:28px;display:grid;gap:10px;position:relative}
+.sheet .day{font-family:var(--display);font-weight:800;font-size:4.5rem;line-height:.85;color:var(--red)}
+.sheet .price{font-family:var(--display);font-weight:800;font-size:1.8rem}
+.sheet .x{position:absolute;right:12px;top:10px;border:0;background:none;font-size:1.6rem;cursor:pointer;padding:6px 10px}
+.sheet .actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:8px}
+
+/* Razkritje */
+.rv{background:var(--red);min-height:100vh;display:grid;place-items:start center;padding:48px 20px 60px}
+.rv-in{width:100%;max-width:540px;display:grid;gap:18px}
+.ticket{background:var(--paper);border:1.5px solid var(--ink);border-radius:10px;padding:32px 28px;text-align:center}
+.ticket .grp{color:var(--soft);font-size:.95rem}
+.target{font-family:var(--display);font-weight:800;font-size:clamp(3rem,13vw,5.4rem);line-height:.95;letter-spacing:-.03em;margin:8px 0;overflow-wrap:anywhere}
+.rfacts{text-align:left;margin-top:22px}
+.rfacts div{display:grid;grid-template-columns:120px 1fr;gap:10px;padding:12px 0;border-top:1.5px solid var(--rule)}
+.rfacts span{color:var(--soft);font-size:.9rem}
+.rv-g{background:var(--paper);border:1.5px solid var(--ink);border-radius:10px;padding:22px}
+.rv-g ul{list-style:none;margin:10px 0 0;padding:0}
+.rv-g li{display:flex;justify-content:space-between;gap:12px;padding:11px 0;border-top:1.5px solid var(--rule)}
+.rv-g li b{font-family:var(--display);color:var(--red);white-space:nowrap}
+.rv-g li small{color:var(--soft);display:block}
+.rv-links{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
+.pop{animation:pop .45s cubic-bezier(.2,1.5,.4,1)}
+@keyframes pop{from{transform:scale(.8) rotate(-3deg);opacity:0}}
+@media (prefers-reduced-motion:reduce){.pop{animation:none}}
+
+/* ---------- Božič ---------- */
+.candy{height:10px;background:repeating-linear-gradient(-45deg,var(--red) 0 12px,#fff 12px 24px);border-block:1.5px solid var(--ink)}
+.bunting{height:40px;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='40'%3E%3Cpath d='M0 3Q90 15 180 3' fill='none' stroke='%2317130f' stroke-width='1.500'/%3E%3Cpath d='M8 5l36 4-20 28z' fill='%23ffc83d' stroke='%2317130f' stroke-width='1.500'/%3E%3Cpath d='M70 10l40 0-20 28z' fill='%23ffffff' stroke='%2317130f' stroke-width='1.500'/%3E%3Cpath d='M136 9l36-4-16 32z' fill='%230f4a37' stroke='%2317130f' stroke-width='1.500'/%3E%3C/svg%3E") repeat-x center top;position:relative;z-index:2}
+.hero,.advent,.rv{position:relative;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cg stroke='%23ffffff' stroke-opacity='.16' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='M30 14v32M16 22l28 16M16 38l28-16M30 14l-4 5m4-5l4 5M30 46l-4-5m4 5l4-5'/%3E%3Cpath d='M100 86v22M90.500 91.500l19 11M90.500 102.500l19-11'/%3E%3C/g%3E%3C/svg%3E")}
+.tool,.cal{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cg stroke='%2317130f' stroke-opacity='.06' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='M30 14v32M16 22l28 16M16 38l28-16M30 14l-4 5m4-5l4 5M30 46l-4-5m4 5l4-5'/%3E%3Cpath d='M100 86v22M90.500 91.500l19 11M90.500 102.500l19-11'/%3E%3C/g%3E%3C/svg%3E")}
+.hero{padding-top:0}
+.hero .wrap{padding-top:34px;position:relative;z-index:1}
+.snowfall{position:absolute;inset:0;overflow:hidden;pointer-events:none}
+.snowfall span{position:absolute;top:-30px;color:#fff;animation:snow linear infinite;user-select:none}
+@keyframes snow{to{transform:translateY(110vh) rotate(240deg)}}
+@media (prefers-reduced-motion:reduce){.snowfall{display:none}}
+.strip b{color:var(--yellow)}
+.steps .n{display:grid;place-items:center;width:74px;height:74px;border-radius:50%;background:var(--red);color:#fff;font-size:2.4rem;border:1.5px solid var(--ink);position:relative;margin-top:14px}
+.steps .n::before{content:"";position:absolute;top:-13px;left:50%;transform:translateX(-50%);width:16px;height:12px;background:var(--yellow);border:1.5px solid var(--ink);border-radius:3px 3px 0 0}
+.steps>div:nth-child(2) .n{background:var(--green)}
+.steps>div:nth-child(3) .n{background:var(--yellow);color:var(--ink)}
+footer{padding:0 0 34px}
+footer .candy{margin-bottom:34px}
+.cal .bunting{margin-top:0}
+.sheet{overflow:hidden;padding-top:38px}
+.sheet::before{content:"";position:absolute;left:0;right:0;top:0;height:10px;background:repeating-linear-gradient(-45deg,var(--red) 0 12px,#fff 12px 24px);border-bottom:1.5px solid var(--ink)}
+/* razkritje */
+.rv{padding:0 0 60px;display:block!important;overflow:hidden}
+.rv.hidden{display:none!important}
+.rv>.bunting{width:100%}
+.rv-in{position:relative;z-index:1;margin:26px auto 0;padding:0 20px}
+.ticket{position:relative;padding:0 28px 30px;overflow:visible;margin-top:70px}
+.ticket .candy{margin:0 -28px;border-top:0;border-radius:8px 8px 0 0}
+.face{width:136px;height:136px;border-radius:50%;border:1.5px solid var(--ink);background:#fff url(santa.jpg) -164px -40px/460px auto no-repeat;margin:-78px auto 10px;position:relative;z-index:1;transform:rotate(-4deg)}
+.hat-note{position:absolute;right:18px;top:26px;transform:rotate(8deg);color:var(--green)}
+.target{color:var(--red)}
+.gbox{display:block;width:64px;height:64px;margin:6px auto 0}
+.count{background:var(--yellow);border:1.5px solid var(--ink);border-radius:6px;padding:8px 12px;text-align:center;font-weight:700}
+.rv-g h3::before{content:"";display:inline-block;width:12px;height:12px;border-radius:50%;background:var(--red);border:1.5px solid var(--ink);margin-right:10px}
+.rv-links .btn{background:#fff}
+.rv-links .btn:hover{background:var(--ink)}
+.got{background:#fff;color:var(--ink);border:1.5px solid var(--ink);border-radius:8px;padding:14px 16px;max-width:560px}
+.got>div{display:flex;gap:8px}
+.got label{font-size:.95rem;margin-bottom:8px}
+.got .bad{color:var(--red)}
+</style>
+</head>
+<body>
+
+<!-- ===================== DOMOV ===================== -->
+<div id="home">
+  <div class="strip">Žrebanje je brezplačno do 15 oseb. <b class="xmas"></b></div>
+  <nav class="nav" aria-label="Glavna navigacija"><div class="wrap">
+    <button class="logo" data-go="top" type="button">skrivni božiček<span>.</span></button>
+    <div class="links">
+      <button class="t" data-go="kako" type="button">Kako deluje</button>
+      <button class="t" data-view="koledar" type="button">Adventni koledar</button>
+      <button class="t" data-go="darila" type="button">Ideje za darila</button>
+      <button class="t" data-go="podjetja" type="button">Za podjetja</button>
+      <button class="btn k sm" data-go="zrebanje" type="button">Začni žrebanje</button>
+    </div>
+  </div></nav>
+
+  <header class="hero" id="top"><div class="snowfall"></div><div class="bunting"></div><div class="wrap">
+    <div class="hero-copy">
+      <h1>Letos nihče ne vleče listkov iz klobuka.</h1>
+      <p class="lede">Vpiši imena, mi izžrebamo, kdo komu kupuje. Vsak dobi svojo povezavo in nihče ne izžreba sam sebe. Tudi teta Marija ne.</p>
+      <div class="hero-cta">
+        <button class="btn w" data-go="zrebanje" type="button">Začni žrebanje</button>
+        <button class="tlink" data-view="koledar" type="button">Poglej adventni koledar</button>
+      </div>
+      <form class="got" id="codeFormTop" autocomplete="off">
+        <label for="codeInputTop">Si prejel povezavo? Prilepi jo sem in poglej, komu kupuješ.</label>
+        <div><input id="codeInputTop" placeholder="Prilepi svojo povezavo"><button class="btn k" type="submit">Odpri</button></div>
+      </form>
+    </div>
+    <div class="photo">
+      <div class="polaroid">
+        <div class="img" id="santaImg"><div class="ph">Tukaj pride fotografija Božička.<br>Pošlji mi jo in jo vstavim.</div></div>
+        <div class="cap hand">Ve vse. Pove nič.</div>
+      </div>
+      <div class="sticker"><span><b>0 €</b>do 15 oseb</span></div>
+    </div>
+  </div></header>
+
+  <section id="kako"><div class="wrap">
+    <div class="head"><h2>Tri minute dela. Potem samo še darilo.</h2></div>
+    <div class="steps">
+      <div><span class="n">1</span><h3>Vpiši, kdo sodeluje</h3><p>Imena, proračun in datum izmenjave. Če hočeš, dodaš še želje in par, ki se ne sme izžrebati.</p></div>
+      <div><span class="n">2</span><h3>Klikni Izžrebaj</h3><p>Rezultata ne vidiš niti ti. Zato lahko žrebanje organiziraš in v njem tudi sodeluješ.</p></div>
+      <div><span class="n">3</span><h3>Pošlji povezave</h3><p>Vsak dobi svojo po WhatsAppu, Viberju ali e-mailu. Notri je ime, želja in nekaj idej za darilo.</p></div>
+    </div>
+  </div></section>
+
+  <section class="tool" id="zrebanje"><div class="wrap">
+    <div class="head"><h2>Sestavi skupino</h2><p class="lede" id="exampleNote">Vpisali smo primer, da vidiš, kako izgleda. Zamenjaj imena s svojimi.</p></div>
+    <div class="tool-grid">
+      <div class="stack">
+        <div class="card">
+          <div class="card-h"><span class="k">1</span><h3>Skupina</h3></div>
+          <div class="row3">
+            <div><label for="gName">Ime skupine</label><input id="gName" maxlength="40" placeholder="npr. Družina Novak"></div>
+            <div><label for="gBudget">Proračun (€)</label><input id="gBudget" type="number" min="0" step="1" placeholder="20"></div>
+            <div><label for="gDate">Izmenjava daril</label><input id="gDate" type="date"></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-h"><span class="k">2</span><h3>Kdo sodeluje</h3><span class="aside" id="count"></span></div>
+          <div class="people" id="people"></div>
+          <div class="bar"><button class="btn sm" id="addPerson" type="button">+ Dodaj osebo</button><span class="hidden" id="fullNote">Več kot 15 oseb <span class="paid">Premium</span></span></div>
+          <p class="warn hidden" id="smallWarn">Pri samo 3 osebah lahko vsak iz svojega žreba ugotovi celotno razporeditev. Dodaj vsaj še eno osebo.</p>
+        </div>
+        <div class="card">
+          <div class="card-h"><span class="k">3</span><h3>Kdo se ne sme izžrebati</h3><span class="aside">neobvezno</span></div>
+          <div class="excl-add">
+            <select id="exA" aria-label="Prva oseba"></select><span class="x">in</span>
+            <select id="exB" aria-label="Druga oseba"></select>
+            <button class="btn sm" id="addExcl" type="button">Dodaj</button>
+          </div>
+          <div class="chips" id="chips"></div>
+          <p class="note hidden" id="exclLimit">Brezplačno je na voljo 1 izjema. Več izjem <span class="paid">Premium</span></p>
+        </div>
+        <div class="card hidden" id="resultsWrap">
+          <div class="card-h"><h3>Izžrebano. Zdaj pošlji povezave.</h3><button class="btn sm" id="copyAll" type="button" style="margin-left:auto">Kopiraj vse</button></div>
+          <p class="note" style="margin-top:0">Vsaka povezava pokaže samo, komu kupuje ta oseba.</p>
+          <div class="results" id="results"></div>
+        </div>
+      </div>
+      <aside class="side">
+        <div class="card summary">
+          <h3>Tvoje žrebanje</h3>
+          <ul class="sum">
+            <li>Skupina <b id="sName"></b></li>
+            <li>Sodeluje <b id="sCount"></b></li>
+            <li>Proračun <b id="sBudget"></b></li>
+            <li>Izjeme <b id="sExcl"></b></li>
+          </ul>
+          <button class="btn w wide" id="drawBtn" type="button">Izžrebaj</button>
+          <p class="err" id="err" role="alert"></p>
+          <p class="fine">Brezplačno, brez registracije</p>
+        </div>
+        <form class="card" id="codeForm" autocomplete="off">
+          <label for="codeInput">Si prejel povezavo?</label>
+          <div style="display:flex;gap:8px"><input id="codeInput" placeholder="Prilepi jo sem"><button class="btn sm" type="submit">Odpri</button></div>
+        </form>
+      </aside>
+    </div>
+  </div></section>
+
+  <section class="advent"><div class="wrap">
+    <div class="copy">
+      <h2>Adventni koledar daril</h2>
+      <p class="lede">Od 1. do 24. decembra se vsak dan odpre eno okence. V njem je ideja za darilo iz slovenske trgovine, včasih tudi s popustom.</p>
+      <button class="btn w" data-view="koledar" type="button">Odpri koledar</button>
+    </div>
+    <div class="mini" aria-hidden="true">
+      <div style="background:var(--red);color:#fff">7</div><div style="background:var(--yellow)">19</div><div style="background:#fff">2</div><div style="background:var(--ink);color:#fff">14</div>
+      <div style="background:#fff">23</div><div style="background:var(--red);color:#fff">10</div><div style="background:var(--ink);color:#fff">5</div><div style="background:var(--yellow)">24</div>
+    </div>
+  </div></section>
+
+  <section id="darila"><div class="wrap">
+    <div class="head"><h2>Kaj kupiti za 20 evrov, da ne konča v predalu</h2>
+      <p class="lede">Vsak ob svojem žrebu vidi nekaj idej, ki ustrezajo proračunu skupine.</p></div>
+    <div class="tabs" role="group" aria-label="Proračun">
+      <button type="button" data-b="10" aria-pressed="false">do 10 €</button>
+      <button type="button" data-b="20" aria-pressed="true">do 20 €</button>
+      <button type="button" data-b="30" aria-pressed="false">do 30 €</button>
+    </div>
+    <div class="gifts" id="giftGrid"></div>
+    <p class="note">Listki z napisom "primer" kažejo, kako bo izbor videti. Izdelki trgovin bodo označeni z napisom "partner".</p>
+  </div></section>
+
+  <section id="podjetja" style="padding-top:10px"><div class="wrap">
+    <div class="head"><h2>Imate trgovino ali ekipo?</h2><p class="lede">Trije načini sodelovanja. Prvi dve sta za trgovine in znamke, tretji za podjetja, ki žrebajo med sodelavci.</p></div>
+    <div class="biz">
+      <div><h3>Izdelek med idejami za darila</h3>
+        <p>Udeleženec je pravkar izvedel, komu kupuje in koliko lahko porabi. Vaš izdelek vidi točno takrat.</p>
+        <ul><li>prikaz glede na proračun skupine</li><li>ime, cena in povezava v vašo trgovino</li><li>prvi partnerji brezplačno, v zameno za objavo</li></ul></div>
+      <div><h3>Okence v adventnem koledarju</h3>
+        <p>24 okenc, 24 dni, vsak dan ena trgovina. Na vaš dan je vaš izdelek edini, ki ga obiskovalci odprejo.</p>
+        <ul><li>en dan je samo vaš</li><li>dodate lahko kodo za popust</li><li>okence ostane odprto do konca decembra</li></ul></div>
+      <div><h3>Premium za ekipe</h3>
+        <div class="price">9 €<small>na skupino</small></div>
+        <ul><li>neomejeno oseb in izjem</li><li>anonimna vprašanja izžrebani osebi</li><li>logotip in barve podjetja</li></ul>
+        <button class="btn" disabled type="button" style="justify-self:start">Kmalu na voljo</button></div>
+    </div>
+    <div class="contact"><b>Želite sodelovati?</b><span id="contactBox"></span></div>
+  </div></section>
+
+  <section style="padding-top:10px"><div class="wrap" style="max-width:820px">
+    <div class="head"><h2>Pogosta vprašanja</h2></div>
+    <details><summary>Ali organizator vidi, kdo je koga izžrebal?</summary><p>Ne. Stran pokaže samo povezave po imenih. Ime izžrebane osebe se prikaže šele, ko udeleženec odpre svojo povezavo.</p></details>
+    <details><summary>Ali se moram registrirati?</summary><p>Ne. Žrebanje poteka v tvojem brskalniku. Imen ne pošiljamo in ne shranjujemo nikamor.</p></details>
+    <details><summary>Koliko nas je lahko?</summary><p>Brezplačno od 3 do 15 oseb. Priporočamo vsaj 4, ker pri treh vsak zlahka ugane celotno razporeditev.</p></details>
+    <details><summary>Kaj, če si partnerja že tako kupita darilo?</summary><p>Dodaj ju med izjeme, pa se ne bosta izžrebala med sabo.</p></details>
+  </div></section>
+
+  <footer><div class="candy"></div><div class="wrap"><span>skrivni božiček. Vesel božič in srečno 2027!</span><span>Narejeno na Koroškem.</span></div></footer>
+</div>
+
+<!-- ===================== KOLEDAR ===================== -->
+<div class="cal hidden" id="calView">
+  <nav class="nav"><div class="wrap">
+    <button class="logo" data-view="home" type="button">skrivni božiček<span>.</span></button>
+    <div class="links"><button class="btn k sm" data-view="home" type="button">Na žrebanje</button></div>
+  </div></nav>
+  <div class="bunting"></div>
+  <div class="wrap">
+    <div class="cal-top">
+      <h1 style="font-size:clamp(2.4rem,6vw,4.4rem)">Adventni koledar daril</h1>
+      <p class="lede">Vsak dan eno okence, v vsakem ena ideja za darilo.</p>
+      <p class="banner" id="calBanner"></p>
+      <p class="note" style="margin:0"><label for="testDay" style="display:inline;font-weight:500">Preizkus pred objavo, kot da je </label>
+        <select id="testDay" style="width:auto;padding:4px 8px"><option value="0">danes</option></select></p>
+    </div>
+    <div class="doors" id="doors"></div>
+  </div>
+</div>
+<div class="modal hidden" id="modal" role="dialog" aria-modal="true" aria-labelledby="mTitle">
+  <div class="sheet pop" id="sheet">
+    <button class="x" id="mClose" type="button" aria-label="Zapri">×</button>
+    <div class="day" id="mDay"></div>
+    <span class="hand" id="mMark"></span>
+    <h3 id="mTitle" style="font-size:1.6rem"></h3>
+    <p id="mText" style="color:var(--soft)"></p>
+    <div class="price" id="mPrice"></div>
+    <div class="actions" id="mActions"></div>
+  </div>
+</div>
+
+<!-- ===================== RAZKRITJE ===================== -->
+<div class="rv hidden" id="revealView">
+  <div class="snowfall"></div><div class="bunting"></div>
+  <div class="rv-in">
+    <div class="ticket">
+      <div class="candy"></div>
+      <div class="face" role="img" aria-label="Božiček"></div>
+      <span class="hat-note hand">ho, ho, ho!</span>
+      <p class="grp" id="rvGroup"></p>
+      <h2 style="font-size:2rem;margin-top:4px">Živjo, <span id="rvGiver"></span></h2>
+      <div id="rvClosed">
+        <p style="margin:12px auto 22px;max-width:34ch">Božiček te je izžrebal. Preveri, da ti nihče ne gleda čez ramo.</p>
+        <button class="btn r" id="rvOpen" type="button">Pokaži, komu kupujem</button>
+      </div>
+      <div id="rvOpened" class="hidden">
+        <svg class="gbox" viewBox="0 0 64 64" aria-hidden="true"><rect x="8" y="28" width="48" height="30" rx="3" fill="#0f4a37" stroke="#17130f" stroke-width="1.5"/><rect x="4" y="18" width="56" height="12" rx="3" fill="#0f4a37" stroke="#17130f" stroke-width="1.5"/><rect x="27" y="18" width="10" height="40" fill="#ffc83d" stroke="#17130f" stroke-width="1.5"/><path d="M32 18C24 4 10 8 14 14s12 4 18 4zm0 0c8-14 22-10 18-4s-12 4-18 4z" fill="#ffc83d" stroke="#17130f" stroke-width="1.5"/></svg>
+        <p style="margin-top:8px;color:var(--soft)">Darilo kupuješ za</p>
+        <div class="target pop" id="rvTarget"></div>
+        <p class="hand" style="color:var(--red)">Ne povej naprej.</p>
+        <div class="rfacts" id="rvFacts"></div>
+        <p class="count xmasLong" style="margin-top:18px"></p>
+      </div>
+    </div>
+    <div class="rv-g hidden" id="rvGifts">
+      <h3 id="rvGiftsTitle"></h3>
+      <ul id="rvGiftList"></ul>
+    </div>
+    <div class="rv-links">
+      <button class="btn sm" data-view="koledar" type="button">Adventni koledar</button>
+      <button class="btn sm" data-view="home" type="button">Organiziraj svoje žrebanje</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/*LOGIC*/
+const ALPH = "abcdefghijklmnopqrstuvwxyz234567";
+const KEY = [115,107,114,105,118,110,105,45,98,111,122,105,99,101,107];
+function b32e(bytes){let bits=0,val=0,out="";for(const b of bytes){val=(val<<8)|b;bits+=8;while(bits>=5){out+=ALPH[(val>>>(bits-5))&31];bits-=5;}val&=(1<<bits)-1;}if(bits>0)out+=ALPH[(val<<(5-bits))&31];return out;}
+function b32d(str){let bits=0,val=0;const out=[];for(const ch of str){const v=ALPH.indexOf(ch);if(v<0)throw new Error("bad");val=(val<<5)|v;bits+=5;if(bits>=8){out.push((val>>>(bits-8))&255);bits-=8;}val&=(1<<bits)-1;}return new Uint8Array(out);}
+function mix(bytes){const o=new Uint8Array(bytes.length);for(let i=0;i<bytes.length;i++)o[i]=bytes[i]^KEY[i%KEY.length]^((i*37)&255);return o;}
+function encodeTicket(obj){return "s1"+b32e(mix(new TextEncoder().encode(JSON.stringify(obj))));}
+function decodeTicket(code){code=String(code||"").trim();const h=code.indexOf("#");if(h>=0)code=code.slice(h+1);code=code.toLowerCase();if(!code.startsWith("s1"))return null;try{return JSON.parse(new TextDecoder().decode(mix(b32d(code.slice(2)))));}catch(e){return null;}}
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function solveOnce(names,banned){const order=shuffle(names),used=new Set(),res={};
+  function bt(i){if(i===order.length)return true;const g=order[i];for(const r of shuffle(names)){if(r===g||used.has(r)||banned.has(g+"\u0000"+r))continue;used.add(r);res[g]=r;if(bt(i+1))return true;used.delete(r);delete res[g];}return false;}
+  return bt(0)?res:null;}
+function hasMutual(res){for(const g in res){if(res[res[g]]===g)return true;}return false;}
+function drawPairs(names,exclusions){const banned=new Set();for(const [a,b] of exclusions){banned.add(a+"\u0000"+b);banned.add(b+"\u0000"+a);}
+  let best=null;for(let t=0;t<40;t++){const r=solveOnce(names,banned);if(!r)return null;best=r;if(names.length<4||!hasMutual(r))break;}return best;}
+function pickGifts(list,budget,max){return list.filter(g=>g.p<=budget).sort((a,b)=>b.p-a.p).slice(0,max);}
+/* Koledar: pred 1. decembrom vse zaprto, v decembru okenca od 1 do današnjega dne, po 24. vsa. */
+function calMode(now){const m=now.getMonth(),d=now.getDate();if(m===11)return {before:false,upTo:Math.min(d,24)};if(m===0)return {before:false,upTo:24};
+  return {before:true,upTo:0,daysLeft:Math.ceil((new Date(now.getFullYear(),11,1)-new Date(now.getFullYear(),m,d))/864e5)};}
+/*END*/
+
+const MAX_FREE = 15, MAX_EXCL_FREE = 1;
+const BASE_URL = "";
+const CONTACT_EMAIL = "";     // e-naslov za partnerje
+const SANTA_PHOTO = "santa.jpg";       // npr. "santa.jpg", ko je fotografija dodana
+const $ = id => document.getElementById(id);
+const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const eur = n => n.toFixed(2).replace(".",",")+" €";
+
+if(SANTA_PHOTO){const im=new Image();im.alt="Božiček";im.src=SANTA_PHOTO;$("santaImg").replaceChildren(im);}
+$("contactBox").textContent=CONTACT_EMAIL?("Pišite na "+CONTACT_EMAIL):"Kontakt objavimo ob zagonu strani.";
+
+/* Izdelki. partner:true + url = pravi partner. Ostalo so primeri. */
+const GIFTS = [
+  {t:"Domač cvetlični med z orehi",p:8,c:"Sladko"},
+  {t:"Čokoladne praline, 12 kosov",p:9,c:"Sladko"},
+  {t:"Sveže pražena kava, 250 g",p:10,c:"Kava"},
+  {t:"Dišeča sveča iz sojinega voska",p:12,c:"Za dom"},
+  {t:"Tople volnene nogavice",p:14,c:"Moda"},
+  {t:"Skodelica z ilustracijo",p:15,c:"Za dom"},
+  {t:"Družabna igra za dva",p:19,c:"Zabava"},
+  {t:"Darilni set naravne kozmetike",p:24,c:"Nega"},
+  {t:"Paket lokalnih dobrot",p:29,c:"Sladko"}
+];
+function giftCard(g){
+  const el=document.createElement(g.url?"a":"div");el.className="gift";
+  if(g.url){el.href=g.url;el.target="_blank";el.rel="noopener sponsored";}
+  el.innerHTML=`<span class="mark hand ${g.partner?"p":""}">${g.partner?"partner":"primer"}</span><span class="cat"></span><h4></h4><span class="price"></span>`;
+  el.querySelector(".cat").textContent=g.c;el.querySelector("h4").textContent=g.t;el.querySelector(".price").textContent=eur(g.p);
+  return el;
+}
+function slotCard(){
+  const el=document.createElement("div");el.className="gift slot";
+  el.innerHTML=`<span class="cat" style="color:inherit">Za trgovine</span><h4>Tukaj je lahko vaš izdelek</h4><button class="btn k sm" type="button">Kako do tega</button>`;
+  el.querySelector("button").onclick=()=>go("podjetja");return el;
+}
+function renderGifts(b){
+  const grid=$("giftGrid");grid.innerHTML="";
+  pickGifts(GIFTS,b,7).forEach(g=>grid.appendChild(giftCard(g)));grid.appendChild(slotCard());
+  document.querySelectorAll(".tabs button").forEach(x=>x.setAttribute("aria-pressed",String(+x.dataset.b===b)));
+}
+document.querySelector(".tabs").addEventListener("click",e=>{const b=e.target.dataset.b;if(b)renderGifts(+b);});
+
+/* Pogledi */
+function show(view){
+  $("home").classList.toggle("hidden",view!=="home");
+  $("calView").classList.toggle("hidden",view!=="koledar");
+  $("revealView").classList.toggle("hidden",view!=="reveal");
+  window.scrollTo(0,0);
+}
+function go(id){show("home");const el=$(id);if(el)el.scrollIntoView({behavior:reduce?"auto":"smooth",block:"start"});}
+document.addEventListener("click",e=>{
+  const v=e.target.closest("[data-view]");
+  if(v){const name=v.dataset.view;try{history.replaceState(null,"",name==="koledar"?"#koledar":location.pathname+location.search);}catch(err){}
+    if(name==="koledar")renderDoors();show(name);return;}
+  const b=e.target.closest("[data-go]");if(b)go(b.dataset.go);
+});
+
+/* Adventni koledar */
+const ORDER=[7,19,2,14,23,10,5,21,12,1,17,8,24,3,15,20,6,11,22,4,16,9,13,18];
+const WIDE=new Set([19,12,6]), FREE=new Set([3,6,9,12,15,18,21]);
+const CODES={5:"ADVENT10",14:"DARILO5",22:"BOZICEK15"};
+function doorContent(day){
+  if(day===24)return {partner:true,t:"Pesem, napisana samo zanj ali zanjo",c:"PesemZaTebe",text:"Personalizirana pesem po vaši zgodbi. Darilo, ki ga nima nihče drug.",url:"https://pesemzatebe.si"};
+  if(FREE.has(day))return {free:true};
+  const g=GIFTS[(day*4)%GIFTS.length];return {...g,code:CODES[day]};
+}
+let testDay=0;
+let opened=new Set();
+try{opened=new Set(JSON.parse(localStorage.getItem("sb-advent-2026")||"[]"));}catch(e){}
+function saveOpened(){try{localStorage.setItem("sb-advent-2026",JSON.stringify([...opened]));}catch(e){}}
+function renderDoors(){
+  const mode=testDay?{before:false,upTo:testDay,test:true}:calMode(new Date());
+  $("calBanner").textContent=mode.test?`Preizkus: kot da je ${testDay}. december. Odpreš lahko okenca od 1 do ${testDay}.`
+    :mode.before?`Prvo okence se odpre 1. decembra. Še ${mode.daysLeft} dni.`
+    :mode.upTo>=24?"Odprta so vsa okenca."
+    :`Danes je ${mode.upTo}. december. Odpreš lahko okenca od 1 do ${mode.upTo}, naslednje se odpre jutri.`;
+  const box=$("doors");box.innerHTML="";
+  ORDER.forEach((day,i)=>{
+    const b=document.createElement("button");b.type="button";
+    b.className="door c"+(i*3%5)+(day===24?" big":WIDE.has(day)?" wide":"");
+    const locked=day>mode.upTo,isOpen=opened.has(day)&&!locked;
+    if(isOpen)b.classList.add("open");
+    b.disabled=locked;
+    const s=document.createElement("small");s.textContent=locked?`${day}. december`:isOpen?"odprto":"";
+    b.append(document.createTextNode(day),s);
+    b.setAttribute("aria-label",`${day}. december${locked?", še zaprto":""}`);
+    b.onclick=()=>openDoor(day);
+    box.appendChild(b);
+  });
+}
+function openDoor(day){
+  opened.add(day);saveOpened();renderDoors();
+  const c=doorContent(day),act=$("mActions");act.innerHTML="";
+  $("mDay").textContent=day;
+  if(c.free){
+    $("mMark").textContent="še prosto";$("mTitle").textContent="To okence čaka na trgovino";
+    $("mText").textContent="Na ta dan je lahko vaš izdelek edini, ki ga obiskovalci odprejo.";$("mPrice").textContent="";
+    const b=document.createElement("button");b.className="btn k";b.type="button";b.textContent="Za trgovine";b.onclick=()=>{closeModal();go("podjetja");};act.appendChild(b);
+  }else{
+    $("mMark").textContent=c.partner?"partner":"primer";$("mTitle").textContent=c.t;
+    $("mText").textContent=c.text||c.c;$("mPrice").textContent=c.p?eur(c.p):"";
+    if(c.code){const k=document.createElement("button");k.className="btn";k.type="button";k.textContent="Koda: "+c.code;
+      k.onclick=async()=>{try{await navigator.clipboard.writeText(c.code);k.textContent="Kopirano";}catch(e){}};act.appendChild(k);}
+    if(c.url){const a=document.createElement("a");a.className="btn k";a.href=c.url;a.target="_blank";a.rel="noopener";a.textContent="Poglej";act.appendChild(a);}
+  }
+  $("mMark").style.color=c.partner?"var(--green)":"var(--soft)";
+  $("modal").classList.remove("hidden");$("mClose").focus();
+}
+function closeModal(){$("modal").classList.add("hidden");}
+for(let d=1;d<=24;d++){const o=document.createElement("option");o.value=d;o.textContent=d+". december";$("testDay").appendChild(o);}
+$("testDay").onchange=e=>{testDay=+e.target.value;renderDoors();};
+$("mClose").onclick=closeModal;
+$("modal").addEventListener("click",e=>{if(e.target===$("modal"))closeModal();});
+addEventListener("keydown",e=>{if(e.key==="Escape")closeModal();});
+
+/* Žrebanje */
+const state={people:[
+  {name:"Ana",wish:"Knjiga ali topel šal"},{name:"Miha",wish:"Kava, karkoli s kavo"},{name:"Nina",wish:""},
+  {name:"Luka",wish:"Družabna igra"},{name:"Teja",wish:"Rastlina za na okno"},{name:"Jure",wish:""}],
+  excl:[["Ana","Miha"]]};
+$("gName").value="Družina Novak";$("gBudget").value="20";$("gDate").value="2026-12-24";
+function cleanNames(){return state.people.map(p=>p.name.trim()).filter(Boolean);}
+function renderPeople(){
+  const box=$("people");box.innerHTML="";
+  state.people.forEach((p,i)=>{
+    const row=document.createElement("div");row.className="person";
+    row.innerHTML=`<span class="num">${i+1}</span>
+      <input data-i="${i}" data-f="name" id="pn${i}" maxlength="30" placeholder="Ime" aria-label="Ime osebe ${i+1}">
+      <input class="wish" data-i="${i}" data-f="wish" id="pw${i}" maxlength="80" placeholder="Kaj si želi (neobvezno)" aria-label="Želja osebe ${i+1}">
+      <button class="del" data-del="${i}" type="button" aria-label="Odstrani osebo ${i+1}">×</button>`;
+    row.querySelector('[data-f="name"]').value=p.name;row.querySelector('[data-f="wish"]').value=p.wish;
+    box.appendChild(row);
+  });
+  updateMeta();
+}
+function updateMeta(){
+  const n=state.people.length;
+  $("count").textContent=`${n} od ${MAX_FREE}`;
+  $("addPerson").disabled=n>=MAX_FREE;$("fullNote").classList.toggle("hidden",n<MAX_FREE);
+  $("smallWarn").classList.toggle("hidden",cleanNames().length!==3);
+  renderExclSelects();renderChips();updateSummary();
+}
+function updateSummary(){
+  $("sName").textContent=$("gName").value.trim()||"brez imena";
+  $("sCount").textContent=cleanNames().length+" oseb";
+  $("sBudget").textContent=$("gBudget").value?("do "+$("gBudget").value+" €"):"ni določen";
+  $("sExcl").textContent=state.excl.length?state.excl.map(e=>e.join(" in ")).join(", "):"brez";
+}
+["gName","gBudget","gDate"].forEach(id=>$(id).addEventListener("input",updateSummary));
+function renderExclSelects(){
+  const names=cleanNames();
+  for(const id of ["exA","exB"]){const s=$(id),prev=s.value;s.innerHTML="";
+    names.forEach(n=>{const o=document.createElement("option");o.value=n;o.textContent=n;s.appendChild(o);});
+    if(names.includes(prev))s.value=prev;}
+  if(names.length>1&&$("exA").value===$("exB").value)$("exB").value=names.find(n=>n!==$("exA").value);
+}
+function renderChips(){
+  const names=new Set(cleanNames());
+  state.excl=state.excl.filter(([a,b])=>names.has(a)&&names.has(b));
+  const box=$("chips");box.innerHTML="";
+  state.excl.forEach(([a,b],k)=>{const c=document.createElement("span");c.className="chip";
+    c.append(document.createTextNode(`${a} in ${b}`));
+    const x=document.createElement("button");x.type="button";x.textContent="×";x.setAttribute("aria-label",`Odstrani izjemo ${a} in ${b}`);
+    x.onclick=()=>{state.excl.splice(k,1);renderChips();updateSummary();};c.appendChild(x);box.appendChild(c);});
+  const full=state.excl.length>=MAX_EXCL_FREE;
+  $("addExcl").disabled=full;$("exclLimit").classList.toggle("hidden",!full);
+}
+$("people").addEventListener("input",e=>{const t=e.target;if(t.dataset.i==null)return;state.people[+t.dataset.i][t.dataset.f]=t.value;$("exampleNote").classList.add("hidden");if(t.dataset.f==="name")updateMeta();});
+$("people").addEventListener("click",e=>{const d=e.target.dataset.del;if(d==null)return;state.people.splice(+d,1);renderPeople();});
+$("addPerson").onclick=()=>{if(state.people.length>=MAX_FREE)return;state.people.push({name:"",wish:""});renderPeople();$("pn"+(state.people.length-1)).focus();};
+$("addExcl").onclick=()=>{const a=$("exA").value,b=$("exB").value;$("err").textContent="";
+  if(!a||!b||a===b){$("err").textContent="Za izjemo izberi dve različni osebi.";return;}
+  if(state.excl.some(([x,y])=>(x===a&&y===b)||(x===b&&y===a)))return;
+  state.excl.push([a,b]);renderChips();updateSummary();};
+
+$("drawBtn").onclick=()=>{
+  const err=$("err");err.textContent="";
+  const names=cleanNames(),lower=names.map(n=>n.toLowerCase());
+  if(names.length<3){err.textContent="Za žrebanje potrebuješ vsaj 3 osebe.";return;}
+  if(names.length>MAX_FREE){err.textContent=`Brezplačno lahko žrebaš do ${MAX_FREE} oseb.`;return;}
+  const dup=lower.find((n,i)=>lower.indexOf(n)!==i);
+  if(dup){err.textContent=`Ime "${names[lower.indexOf(dup)]}" je vpisano dvakrat. Dodaj priimek ali začetnico.`;return;}
+  const res=drawPairs(names,state.excl);
+  if(!res){err.textContent="S temi izjemami žrebanje ni mogoče. Odstrani izjemo ali dodaj osebo.";return;}
+  const wishes={};state.people.forEach(p=>{if(p.name.trim())wishes[p.name.trim()]=p.wish.trim();});
+  const meta={n:$("gName").value.trim(),b:$("gBudget").value.trim(),d:$("gDate").value};
+  const base=(BASE_URL||location.href.split("#")[0]);
+  const box=$("results");box.innerHTML="";const all=[];
+  names.forEach(g=>{
+    const link=base+"#"+encodeTicket({...meta,g,r:res[g],w:wishes[res[g]]||""});
+    all.push(`${g}: ${link}`);
+    const msg=`Živjo ${g}! Izžreban si za skrivnega Božička${meta.n?" ("+meta.n+")":""}. Odpri svojo povezavo in poglej, komu kupuješ darilo: ${link}`;
+    const row=document.createElement("div");row.className="res";
+    row.innerHTML=`<span class="who"></span><input readonly><button class="btn sm" type="button">Kopiraj</button><a class="btn sm k" target="_blank" rel="noopener">WhatsApp</a>`;
+    row.querySelector(".who").textContent=g;
+    const inp=row.querySelector("input");inp.value=link;inp.setAttribute("aria-label","Povezava za "+g);
+    row.querySelector("button").onclick=ev=>copyText(link,ev.currentTarget,inp);
+    row.querySelector("a").href="https://wa.me/?text="+encodeURIComponent(msg);
+    box.appendChild(row);
+  });
+  $("copyAll").onclick=ev=>copyText(all.join("\n"),ev.currentTarget,null);
+  $("resultsWrap").classList.remove("hidden");
+  $("resultsWrap").scrollIntoView({behavior:reduce?"auto":"smooth",block:"center"});
+};
+async function copyText(text,btn,inp){
+  const orig=btn.dataset.orig||btn.textContent;btn.dataset.orig=orig;
+  try{await navigator.clipboard.writeText(text);btn.textContent="Kopirano";}
+  catch(e){if(inp){inp.focus();inp.select();}btn.textContent="Označeno";}
+  setTimeout(()=>{btn.textContent=orig;},1800);
+}
+
+/* Razkritje */
+function showReveal(t){
+  show("reveal");
+  $("rvGiver").textContent=t.g;$("rvGroup").textContent=t.n?("Skrivni Božiček, "+t.n):"Skrivni Božiček";
+  $("rvTarget").textContent=t.r;
+  const f=$("rvFacts");f.innerHTML="";
+  const add=(k,v)=>{const d=document.createElement("div");const s=document.createElement("span");s.textContent=k;const b=document.createElement("b");b.textContent=v;d.append(s,b);f.appendChild(d);};
+  add("Želi si",t.w||"Ni napisano. Preseneti.");
+  if(t.b)add("Proračun","do "+t.b+" €");
+  if(t.d){const dt=new Date(t.d+"T12:00:00");if(!isNaN(dt))add("Izmenjava",dt.toLocaleDateString("sl-SI",{weekday:"long",day:"numeric",month:"long"}));}
+  const b=+t.b||20,ul=$("rvGiftList");ul.innerHTML="";
+  const picks=pickGifts(GIFTS,b,3);
+  picks.forEach(g=>{const li=document.createElement("li");const l=document.createElement("span");l.textContent=g.t;
+    const sm=document.createElement("small");sm.textContent=g.c+(g.partner?"":" · primer");l.appendChild(sm);
+    const pr=document.createElement("b");pr.textContent=eur(g.p);li.append(l,pr);ul.appendChild(li);});
+  $("rvGiftsTitle").textContent=`Nekaj idej do ${b} €`;
+  $("rvGifts").dataset.has=picks.length?"1":"";
+  $("rvClosed").classList.remove("hidden");$("rvOpened").classList.add("hidden");$("rvGifts").classList.add("hidden");
+}
+$("rvOpen").onclick=()=>{$("rvClosed").classList.add("hidden");$("rvOpened").classList.remove("hidden");
+  if($("rvGifts").dataset.has)$("rvGifts").classList.remove("hidden");};
+[["codeForm","codeInput"],["codeFormTop","codeInputTop"]].forEach(([f,i])=>$(f).addEventListener("submit",e=>{e.preventDefault();const t=decodeTicket($(i).value);
+  if(!t){$(i).value="";$(i).placeholder="Te povezave ne prepoznam. Prilepi celo povezavo.";$(i).focus();return;}$(i).value="";showReveal(t);}));
+
+function route(){
+  const h=location.hash.replace("#","");
+  if(h==="koledar"){renderDoors();show("koledar");return;}
+  const t=decodeTicket(location.hash);if(t)showReveal(t);
+}
+addEventListener("hashchange",route);
+/* Odštevanje in sneg */
+(function(){const n=new Date(),y=n.getMonth()===11&&n.getDate()>25?n.getFullYear()+1:n.getFullYear();
+  const d=Math.ceil((new Date(y,11,25)-new Date(n.getFullYear(),n.getMonth(),n.getDate()))/864e5);
+  const t=d===0?"Danes je božič!":d===1?"Do božiča je še 1 dan.":`Do božiča je še ${d} dni.`;
+  document.querySelectorAll(".xmas").forEach(e=>e.textContent=t);
+  document.querySelectorAll(".xmasLong").forEach(e=>e.textContent=d===0?"Danes je božič!":t+" Čas za nakup še je.");
+  document.querySelectorAll(".snowfall").forEach(box=>{for(let i=0;i<18;i++){const s=document.createElement("span");s.textContent=i%3?"❄":"❅";
+    s.style.left=(Math.random()*100)+"%";s.style.fontSize=(10+Math.random()*16)+"px";s.style.opacity=.35+Math.random()*.5;
+    s.style.animationDuration=(9+Math.random()*10)+"s";s.style.animationDelay=(-Math.random()*18)+"s";box.appendChild(s);}});
+})();
+renderPeople();renderGifts(20);route();
+</script>
+</body>
+</html>
