@@ -277,6 +277,26 @@ footer .candy{margin-bottom:34px}
 .qa .q{font-weight:700}
 .qa .a{color:var(--soft);margin-top:2px}
 .saved{font-size:.86rem;color:var(--green);font-weight:700;min-height:1.2em;margin-top:6px}
+.flink{background:none;border:0;padding:0;color:#fff;cursor:pointer;text-decoration:underline;text-underline-offset:3px;font:inherit}
+.doc{min-height:100vh;background:var(--paper)}
+.prose{max-width:760px;padding-top:48px;padding-bottom:80px;display:grid;gap:14px}
+.prose h1{font-size:clamp(2.2rem,5vw,3.4rem)}
+.prose h2{font-size:1.5rem;margin-top:18px}
+.prose ul{margin:0;padding-left:22px;display:grid;gap:4px}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-top:10px}
+.tile{border:1.5px solid var(--rule);border-radius:8px;padding:14px 16px}
+.tile b{display:block;font-family:var(--display);font-weight:800;font-size:2.2rem;line-height:1;color:var(--red);font-variant-numeric:tabular-nums}
+.tile span{font-size:.88rem;color:var(--soft)}
+.tbl{width:100%;border-collapse:collapse;margin-top:8px}
+.tbl th,.tbl td{text-align:left;padding:9px 8px;border-top:1.5px solid var(--rule);font-size:.95rem}
+.tbl td:last-child,.tbl th:last-child{text-align:right;font-variant-numeric:tabular-nums;font-weight:700}
+.tblwrap{overflow-x:auto}
+.brand{margin-top:10px;display:grid;gap:8px}
+.brand .rowb{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.brand input[type=file]{font-size:.82rem;padding:6px;background:#fff}
+.brand input[type=color]{width:54px;height:40px;padding:2px}
+.brand img{max-height:44px;max-width:140px;background:#fff;border-radius:4px;padding:4px}
+.rv-logo{display:block;max-height:64px;max-width:220px;margin:6px auto 10px}
 </style>
 </head>
 <body>
@@ -373,6 +393,11 @@ footer .candy{margin-bottom:34px}
             <label for="pCode">Koda Premium (če jo imaš)</label>
             <div><input id="pCode" placeholder="SB-…" autocomplete="off" maxlength="14"><button class="btn sm" id="pCodeBtn" type="button">Uporabi</button></div>
             <p id="pMsg"></p>
+            <div class="brand hidden" id="brandBox">
+              <label for="logoFile">Logotip podjetja (PNG, JPG ali SVG)</label>
+              <div class="rowb"><input id="logoFile" type="file" accept="image/png,image/jpeg,image/svg+xml,image/webp"><img id="logoPrev" class="hidden" alt="Predogled logotipa"></div>
+              <div class="rowb"><label for="brandColor" style="margin:0">Barva ozadja</label><input id="brandColor" type="color" value="#d6281b"></div>
+            </div>
           </div>
           <button class="btn w wide" id="drawBtn" type="button">Izžrebaj</button>
           <p class="err" id="err" role="alert"></p>
@@ -437,7 +462,7 @@ footer .candy{margin-bottom:34px}
     <details><summary>Kaj, če si partnerja že tako kupita darilo?</summary><p>Dodaj ju med izjeme, pa se ne bosta izžrebala med sabo.</p></details>
   </div></section>
 
-  <footer><div class="candy"></div><div class="wrap"><span>skrivni božiček. Vesel božič in srečno 2027!</span><span>Narejeno na Koroškem.</span></div></footer>
+  <footer><div class="candy"></div><div class="wrap"><span>skrivni božiček. Vesel božič in srečno 2027!</span><span><button class="flink" data-view="zasebnost" type="button">Zasebnost</button> · <button class="flink" data-view="statistika" type="button">Za lastnika</button> · Narejeno na Koroškem.</span></div></footer>
 </div>
 
 <!-- ===================== KOLEDAR ===================== -->
@@ -452,12 +477,59 @@ footer .candy{margin-bottom:34px}
       <h1 style="font-size:clamp(2.4rem,6vw,4.4rem)">Adventni koledar daril</h1>
       <p class="lede">Vsak dan eno okence, v vsakem ena ideja za darilo.</p>
       <p class="banner" id="calBanner"></p>
-      <p class="note" style="margin:0"><label for="testDay" style="display:inline;font-weight:500">Preizkus pred objavo, kot da je </label>
-        <select id="testDay" style="width:auto;padding:4px 8px"><option value="0">danes</option></select></p>
     </div>
     <div class="doors" id="doors"></div>
   </div>
 </div>
+<div class="doc hidden" id="privView">
+  <nav class="nav"><div class="wrap">
+    <button class="logo" data-view="home" type="button">skrivni božiček<span>.</span></button>
+    <div class="links"><button class="btn k sm" data-view="home" type="button">Nazaj</button></div>
+  </div></nav>
+  <div class="wrap prose">
+    <h1>Zasebnost</h1>
+    <p class="lede">Na kratko: shranimo samo tisto, kar vpišeš, da žrebanje deluje. Brez e-mailov, brez gesel, brez oglaševalskih piškotkov.</p>
+    <h2>Kaj shranimo</h2>
+    <ul>
+      <li>ime skupine, proračun in datum izmenjave,</li>
+      <li>imena udeležencev, kot jih vpiše organizator, in kdo komu kupuje,</li>
+      <li>želje ter anonimna vprašanja in odgovori, če jih uporabljate.</li>
+    </ul>
+    <p>Organizatorju svetujemo, da vpiše samo imena ali vzdevke, brez priimkov.</p>
+    <h2>Česa ne zbiramo</h2>
+    <p>Ne zbiramo e-mailov, telefonskih številk ali gesel in ne uporabljamo piškotkov za oglaševanje ali sledenje. Tvoj brskalnik si sam zapomni, katera okenca adventnega koledarja si že odprl.</p>
+    <h2>Statistika in zaščita pred zlorabo</h2>
+    <p>Štejemo, kolikokrat je bilo odprto posamezno okence in kolikokrat je bil kliknjen izdelek. Števec ni povezan z osebo. Za omejitev zlorab za največ 2 dni hranimo zakrit zapis IP naslova, iz katerega naslova ni mogoče prebrati.</p>
+    <h2>Kako dolgo</h2>
+    <p>Žrebanje z vsemi imeni, željami in vprašanji se samodejno izbriše najkasneje 90 dni po nastanku.</p>
+    <h2>Kdo podatke obdeluje</h2>
+    <ul>
+      <li>Supabase hrani bazo podatkov na strežniku v Londonu (Združeno kraljestvo).</li>
+      <li>GitHub Pages gosti spletno stran in pri obisku vidi tvoj IP naslov.</li>
+      <li>Google Fonts dostavi pisave, pri čemer Google vidi tvoj IP naslov.</li>
+    </ul>
+    <h2>Tvoje pravice</h2>
+    <p>Zahtevaš lahko vpogled, popravek ali izbris svojih podatkov. Kdor ima povezavo udeleženca, lahko svojo željo kadar koli sam spremeni ali izbriše.</p>
+    <p id="privContact"></p>
+  </div>
+</div>
+
+<div class="doc hidden" id="statView">
+  <nav class="nav"><div class="wrap">
+    <button class="logo" data-view="home" type="button">skrivni božiček<span>.</span></button>
+    <div class="links"><button class="btn k sm" data-view="home" type="button">Nazaj</button></div>
+  </div></nav>
+  <div class="wrap prose">
+    <h1>Statistika</h1>
+    <p class="lede">Samo za lastnika strani. Ključ najdeš v Supabase, v tabeli admin_keys.</p>
+    <form class="inline" id="statForm" autocomplete="off" style="max-width:520px">
+      <input id="statKey" type="password" placeholder="Ključ lastnika" aria-label="Ključ lastnika"><button class="btn k" type="submit">Pokaži</button>
+    </form>
+    <p class="err" id="statErr" style="color:var(--red)"></p>
+    <div id="statOut"></div>
+  </div>
+</div>
+
 <div class="modal hidden" id="modal" role="dialog" aria-modal="true" aria-labelledby="mTitle">
   <div class="sheet pop" id="sheet">
     <button class="x" id="mClose" type="button" aria-label="Zapri">×</button>
@@ -478,6 +550,7 @@ footer .candy{margin-bottom:34px}
       <div class="candy"></div>
       <div class="face" role="img" aria-label="Božiček"></div>
       <span class="hat-note hand">ho, ho, ho!</span>
+      <img class="rv-logo hidden" id="rvLogo" alt="Logotip">
       <p class="grp" id="rvGroup"></p>
       <h2 style="font-size:2rem;margin-top:4px">Živjo, <span id="rvGiver"></span></h2>
       <div id="rvClosed">
@@ -591,12 +664,14 @@ function show(view){
   $("home").classList.toggle("hidden",view!=="home");
   $("calView").classList.toggle("hidden",view!=="koledar");
   $("revealView").classList.toggle("hidden",view!=="reveal");
+  $("privView").classList.toggle("hidden",view!=="zasebnost");
+  $("statView").classList.toggle("hidden",view!=="statistika");
   window.scrollTo(0,0);
 }
 function go(id){show("home");const el=$(id);if(el)el.scrollIntoView({behavior:reduce?"auto":"smooth",block:"start"});}
 document.addEventListener("click",e=>{
   const v=e.target.closest("[data-view]");
-  if(v){const name=v.dataset.view;try{history.replaceState(null,"",name==="koledar"?"#koledar":location.pathname+location.search);}catch(err){}
+  if(v){const name=v.dataset.view;try{history.replaceState(null,"",name==="home"?location.pathname+location.search:"#"+name);}catch(err){}
     if(name==="koledar")renderDoors();show(name);return;}
   const b=e.target.closest("[data-go]");if(b)go(b.dataset.go);
 });
@@ -610,14 +685,12 @@ function doorContent(day){
   if(FREE.has(day))return {free:true};
   const g=GIFTS[(day*4)%GIFTS.length];return {...g,code:CODES[day]};
 }
-let testDay=0;
 let opened=new Set();
 try{opened=new Set(JSON.parse(localStorage.getItem("sb-advent-2026")||"[]"));}catch(e){}
 function saveOpened(){try{localStorage.setItem("sb-advent-2026",JSON.stringify([...opened]));}catch(e){}}
 function renderDoors(){
-  const mode=testDay?{before:false,upTo:testDay,test:true}:calMode(new Date());
-  $("calBanner").textContent=mode.test?`Preizkus: kot da je ${testDay}. december. Odpreš lahko okenca od 1 do ${testDay}.`
-    :mode.before?`Prvo okence se odpre 1. decembra. Še ${mode.daysLeft} dni.`
+  const mode=calMode(new Date());
+  $("calBanner").textContent=mode.before?`Prvo okence se odpre 1. decembra. Še ${mode.daysLeft} dni.`
     :mode.upTo>=24?"Odprta so vsa okenca."
     :`Danes je ${mode.upTo}. december. Odpreš lahko okenca od 1 do ${mode.upTo}, naslednje se odpre jutri.`;
   const box=$("doors");box.innerHTML="";
@@ -653,8 +726,6 @@ function openDoor(day){
   $("modal").classList.remove("hidden");$("mClose").focus();
 }
 function closeModal(){$("modal").classList.add("hidden");}
-for(let d=1;d<=24;d++){const o=document.createElement("option");o.value=d;o.textContent=d+". december";$("testDay").appendChild(o);}
-$("testDay").onchange=e=>{testDay=+e.target.value;renderDoors();};
 $("mClose").onclick=closeModal;
 $("modal").addEventListener("click",e=>{if(e.target===$("modal"))closeModal();});
 addEventListener("keydown",e=>{if(e.key==="Escape")closeModal();});
@@ -663,7 +734,7 @@ addEventListener("keydown",e=>{if(e.key==="Escape")closeModal();});
 const state={people:[
   {name:"Ana",wish:"Knjiga ali topel šal"},{name:"Miha",wish:"Kava, karkoli s kavo"},{name:"Nina",wish:""},
   {name:"Luka",wish:"Družabna igra"},{name:"Teja",wish:"Rastlina za na okno"},{name:"Jure",wish:""}],
-  excl:[["Ana","Miha"]],plan:"free",code:""};
+  excl:[["Ana","Miha"]],plan:"free",code:"",logo:""};
 $("gName").value="Družina Novak";$("gBudget").value="20";$("gDate").value="2026-12-24";
 function cleanNames(){return state.people.map(p=>p.name.trim()).filter(Boolean);}
 function renderPeople(){
@@ -723,13 +794,25 @@ $("addExcl").onclick=()=>{const a=$("exA").value,b=$("exB").value;$("err").textC
 $("pCodeBtn").onclick=async()=>{
   const msg=$("pMsg"),code=$("pCode").value.trim().toUpperCase();msg.textContent="";
   if(!code){msg.textContent="Vpiši kodo.";return;}
-  let plan;try{plan=await rpc("check_code",{p_code:code});}catch(e){msg.textContent="Kode zdaj ne morem preveriti. Poskusi čez minuto.";return;}
+  let plan;try{plan=await rpc("check_code",{p_code:code});}catch(e){msg.textContent=e.code==="RATE_LIMIT"?"Preveč poskusov. Poskusi spet čez eno uro.":"Kode zdaj ne morem preveriti. Poskusi čez minuto.";return;}
   if(!plan){msg.textContent="Ta koda ne velja ali je že porabljena.";return;}
   state.code=code;state.plan=plan;MAX_FREE=plan==="plus"?300:50;MAX_EXCL_FREE=999;
-  msg.textContent=plan==="plus"?"Koda velja: Premium Plus. Do 300 oseb, neomejeno izjem, anonimna vprašanja."
+  $("brandBox").classList.toggle("hidden",plan!=="plus");
+  msg.textContent=plan==="plus"?"Koda velja: Premium Plus. Do 300 oseb, neomejeno izjem, vprašanja, logotip in barva."
     :"Koda velja: Premium. Do 50 oseb, neomejeno izjem, anonimna vprašanja.";
   updateMeta();
 };
+$("logoFile").addEventListener("change",e=>{
+  const f=e.target.files[0],msg=$("pMsg");if(!f)return;
+  const img=new Image(),url=URL.createObjectURL(f);
+  img.onload=()=>{const k=Math.min(1,360/img.width,180/img.height);const c=document.createElement("canvas");
+    c.width=Math.max(1,Math.round(img.width*k));c.height=Math.max(1,Math.round(img.height*k));c.getContext("2d").drawImage(img,0,0,c.width,c.height);
+    const d=c.toDataURL("image/png");URL.revokeObjectURL(url);
+    if(d.length>140000){msg.textContent="Logotip je prevelik. Izberi enostavnejšo sliko.";return;}
+    state.logo=d;$("logoPrev").src=d;$("logoPrev").classList.remove("hidden");};
+  img.onerror=()=>{URL.revokeObjectURL(url);msg.textContent="Te slike ne morem odpreti.";};
+  img.src=url;
+});
 $("drawBtn").onclick=async()=>{
   const err=$("err"),btn=$("drawBtn");err.textContent="";
   const names=cleanNames(),lower=names.map(n=>n.toLowerCase());
@@ -745,11 +828,15 @@ $("drawBtn").onclick=async()=>{
   let links=null;
   btn.disabled=true;btn.textContent="Žrebam …";
   try{
-    const out=await rpc("create_draw",{p_name:meta.n,p_budget:meta.b,p_date:meta.d,p_people:names.map(n=>({name:n,wish:wishes[n]||""})),p_pairs:res,p_code:state.code||null});
+    const out=await rpc("create_draw",{p_name:meta.n,p_budget:meta.b,p_date:meta.d,p_people:names.map(n=>({name:n,wish:wishes[n]||""})),p_pairs:res,p_code:state.code||null,
+      p_logo:state.plan==="plus"&&state.logo?state.logo:null,p_color:state.plan==="plus"?$("brandColor").value:null});
+    if(out&&out.error){const x=new Error(out.error);x.code=out.error;x.server=true;throw x;}
     links={};out.links.forEach(l=>{links[l.name]=base+"#"+l.token;});
-    if(state.code){state.code="";state.plan="free";MAX_FREE=15;MAX_EXCL_FREE=1;$("pCode").value="";$("pMsg").textContent="Koda je porabljena za to žrebanje.";}
+    if(state.code){state.code="";state.plan="free";MAX_FREE=15;MAX_EXCL_FREE=1;$("pCode").value="";$("pMsg").textContent="Koda je porabljena za to žrebanje.";
+      state.logo="";$("brandBox").classList.add("hidden");$("logoPrev").classList.add("hidden");$("logoFile").value="";}
   }catch(e){
     if(e.code==="INVALID_CODE"){err.textContent="Koda Premium ne velja več. Odstrani jo ali vpiši drugo.";btn.disabled=false;btn.textContent="Izžrebaj";return;}
+    if(e.code==="RATE_LIMIT"||e.code==="BUSY"){err.textContent="Preveč žrebanj v kratkem času. Poskusi spet čez eno uro.";btn.disabled=false;btn.textContent="Izžrebaj";return;}
     if(e.server||state.plan!=="free"){err.textContent="Žrebanja ni bilo mogoče shraniti. Poskusi še enkrat čez minuto.";btn.disabled=false;btn.textContent="Izžrebaj";return;}
     links=null; /* brez povezave do strežnika: povezave nosijo podatke same */
   }
@@ -814,6 +901,8 @@ function showReveal(t,token){
   cur={t,token:token||null};
   show("reveal");
   $("rvExtra").classList.add("hidden");
+  const lg=$("rvLogo");if(t.logo&&/^data:image\//.test(t.logo)){lg.src=t.logo;lg.classList.remove("hidden");}else{lg.classList.add("hidden");lg.removeAttribute("src");}
+  $("revealView").style.backgroundColor=/^#[0-9a-f]{6}$/.test(t.color||"")?t.color:"";
   if(token){$("myWish").value=t.my_wish||"";$("wishMsg").textContent="";renderQA();}
   $("rvGiver").textContent=t.g;$("rvGroup").textContent=t.n?("Skrivni Božiček, "+t.n):"Skrivni Božiček";
   $("rvTarget").textContent=t.r;
@@ -846,9 +935,28 @@ async function openCode(v){
   if(ok===true){$(i).value="";return;}
   $(i).value="";$(i).placeholder=ok==="net"?"Ni povezave. Poskusi čez minuto.":"Te povezave ne prepoznam. Prilepi celo povezavo.";$(i).focus();}));
 
+$("privContact").textContent=CONTACT_EMAIL?("Upravljavec strani in kontakt za zahteve: "+CONTACT_EMAIL):"Kontakt upravljavca strani bo objavljen pred javnim zagonom.";
+$("statForm").addEventListener("submit",async e=>{e.preventDefault();
+  const err=$("statErr"),out=$("statOut");err.textContent="";out.innerHTML="";
+  let s;try{s=await rpc("get_stats",{p_key:$("statKey").value});}catch(x){err.textContent="Statistike zdaj ne morem naložiti.";return;}
+  if(!s){err.textContent="Ključ ni pravi.";return;}
+  if(s.error){err.textContent="Preveč poskusov. Poskusi spet čez eno uro.";return;}
+  const tiles=el("div","tiles");
+  [["Žrebanj",s.draws],["Od tega plačanih",s.draws_paid],["Udeležencev",s.people],["Vprašanj",s.questions],["Prostih kod",s.codes_free],["Porabljenih kod",s.codes_used]]
+    .forEach(([k,v])=>{const t=el("div","tile");t.append(el("b",null,String(v)),el("span",null,k));tiles.appendChild(t);});
+  out.appendChild(tiles);
+  const table=(title,head,rows)=>{out.appendChild(el("h2",null,title));
+    if(!rows.length){out.appendChild(el("p","note","Še ni podatkov."));return;}
+    const w=el("div","tblwrap"),tb=el("table","tbl"),hr=el("tr");head.forEach(h=>hr.appendChild(el("th",null,h)));tb.appendChild(hr);
+    rows.forEach(r=>{const tr=el("tr");r.forEach(c=>tr.appendChild(el("td",null,String(c))));tb.appendChild(tr);});w.appendChild(tb);out.appendChild(w);};
+  const place={koledar:"Adventni koledar",darila:"Ideje za darila"};
+  table("Kliki in odprta okenca",["Kaj","Kje","Število"],s.clicks.map(c=>[c.item.replace(/^okence-/,"Okence "),place[c.place]||c.place,c.n]));
+  table("Žrebanja po dnevih",["Dan","Število"],s.days.map(d=>[new Date(d.d+"T12:00:00").toLocaleDateString("sl-SI"),d.n]));
+});
 function route(){
   const h=location.hash.replace("#","");
   if(h==="koledar"){renderDoors();show("koledar");return;}
+  if(h==="zasebnost"||h==="statistika"){show(h);return;}
   if(h)openCode(h);
 }
 addEventListener("hashchange",route);
