@@ -297,6 +297,17 @@ footer .candy{margin-bottom:34px}
 .brand input[type=color]{width:54px;height:40px;padding:2px}
 .brand img{max-height:44px;max-width:140px;background:#fff;border-radius:4px;padding:4px}
 .rv-logo{display:block;max-height:64px;max-width:220px;margin:6px auto 10px}
+.inbox.fresh{background:var(--yellow);border-width:3px}
+.inbox.fresh h3{font-size:1.6rem}
+.inbox.fresh h3::before{background:var(--red);width:16px;height:16px;animation:pulse 1.2s ease-in-out infinite}
+.inbox.fresh .note{color:var(--ink)}
+.inbox.fresh .qa li{border-color:var(--ink)}
+.inbox .qa .q{font-size:1.1rem}
+@keyframes pulse{50%{transform:scale(1.5)}}
+@media (prefers-reduced-motion:reduce){.inbox.fresh h3::before{animation:none}}
+#wishBox:not(.hidden)+#qaBox{margin-top:26px}
+.rv-cal{background:var(--green);color:#fff;border:1.5px solid var(--ink);border-radius:10px;padding:20px 22px;display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:space-between}
+.rv-cal p{opacity:.85;font-size:.95rem;margin-top:2px}
 </style>
 </head>
 <body>
@@ -446,7 +457,7 @@ footer .candy{margin-bottom:34px}
         <ul><li>en dan je samo vaš</li><li>dodate lahko kodo za popust</li><li>okence ostane odprto do konca decembra</li></ul></div>
       <div><h3>Premium za družine in ekipe</h3>
         <div class="price">9 €<small>na skupino</small></div>
-        <ul><li>anonimna vprašanja izžrebani osebi</li><li>do 50 oseb</li><li>neomejeno izjem</li></ul>
+        <ul><li>anonimna vprašanja izžrebani osebi</li><li>vsak sam vpiše svojo željo</li><li>do 50 oseb in neomejeno izjem</li></ul>
         <p><b>Premium Plus, 19 €:</b> <span style="color:var(--soft)">do 300 oseb ter logotip in barva podjetja.</span></p>
         <p style="color:var(--soft)">Po plačilu dobiš kodo, ki jo vpišeš pri žrebanju.</p>
         <button class="btn" data-go="zrebanje" type="button" style="justify-self:start">Imam kodo</button></div>
@@ -546,6 +557,7 @@ footer .candy{margin-bottom:34px}
 <div class="rv hidden" id="revealView">
   <div class="snowfall"></div><div class="bunting"></div>
   <div class="rv-in">
+    <div class="rv-g inbox hidden" id="rvInbox" aria-live="polite"></div>
     <div class="ticket">
       <div class="candy"></div>
       <div class="face" role="img" aria-label="Božiček"></div>
@@ -571,14 +583,19 @@ footer .candy{margin-bottom:34px}
       <ul id="rvGiftList"></ul>
     </div>
     <div class="rv-g hidden" id="rvExtra">
-      <h3>Tvoja želja</h3>
-      <p class="note">Vidi jo samo tisti, ki te je izžrebal.</p>
-      <form class="inline" id="wishForm"><input id="myWish" maxlength="80" placeholder="npr. knjiga, nogavice, kava" aria-label="Tvoja želja"><button class="btn sm k" type="submit">Shrani</button></form>
-      <p class="saved" id="wishMsg"></p>
+      <div id="wishBox">
+        <h3>Tvoja želja</h3>
+        <p class="note">Vidi jo samo tisti, ki te je izžrebal.</p>
+        <form class="inline" id="wishForm"><input id="myWish" maxlength="80" placeholder="npr. knjiga, nogavice, kava" aria-label="Tvoja želja"><button class="btn sm k" type="submit">Shrani</button></form>
+        <p class="saved" id="wishMsg"></p>
+      </div>
       <div id="qaBox"></div>
     </div>
+    <div class="rv-cal">
+      <div><h3>Adventni koledar daril</h3><p>Vsak dan v decembru novo okence z idejo za darilo.</p></div>
+      <button class="btn w" data-view="koledar" type="button">Odpri koledar</button>
+    </div>
     <div class="rv-links">
-      <button class="btn sm" data-view="koledar" type="button">Adventni koledar</button>
       <button class="btn sm" data-view="home" type="button">Organiziraj svoje žrebanje</button>
     </div>
   </div>
@@ -799,7 +816,7 @@ $("pCodeBtn").onclick=async()=>{
   state.code=code;state.plan=plan;MAX_FREE=plan==="plus"?300:50;MAX_EXCL_FREE=999;
   $("brandBox").classList.toggle("hidden",plan!=="plus");
   msg.textContent=plan==="plus"?"Koda velja: Premium Plus. Do 300 oseb, neomejeno izjem, vprašanja, logotip in barva."
-    :"Koda velja: Premium. Do 50 oseb, neomejeno izjem, anonimna vprašanja.";
+    :"Koda velja: Premium. Do 50 oseb, neomejeno izjem, želje in anonimna vprašanja.";
   updateMeta();
 };
 $("logoFile").addEventListener("change",e=>{
@@ -868,9 +885,30 @@ async function copyText(text,btn,inp){
 /* Razkritje */
 let cur={t:null,token:null};
 function el(tag,cls,text){const e=document.createElement(tag);if(cls)e.className=cls;if(text!=null)e.textContent=text;return e;}
+function novih(n){return n===1?"Imaš 1 novo vprašanje":n===2?"Imaš 2 novi vprašanji":n<5?`Imaš ${n} nova vprašanja`:`Imaš ${n} novih vprašanj`;}
+function renderInbox(){
+  const t=cur.t,box=$("rvInbox");box.innerHTML="";
+  const list=(cur.token&&t.inbox)||[];
+  if(!list.length){box.classList.add("hidden");return;}
+  const open=list.filter(q=>!q.a).length;
+  box.classList.remove("hidden");box.classList.toggle("fresh",open>0);
+  box.appendChild(el("h3",null,open?novih(open):"Vprašanja zate"));
+  box.appendChild(el("p","note",open?"Poslal ti ga je tvoj skrivni Božiček. Odgovor vidi samo on.":"Na vsa vprašanja si že odgovoril."));
+  const ul=el("ul","qa");
+  list.forEach((q,k)=>{const li=el("li");li.appendChild(el("div","q",q.q));
+    if(q.a){li.appendChild(el("div","a","Tvoj odgovor: "+q.a));}
+    else{const af=el("form","inline");const ai=el("input");ai.id="ans"+k;ai.maxLength=200;ai.placeholder="Napiši odgovor";ai.setAttribute("aria-label","Odgovor na vprašanje");
+      const ab=el("button","btn sm k","Odgovori");ab.type="submit";af.append(ai,ab);
+      af.addEventListener("submit",async e=>{e.preventDefault();if(!ai.value.trim())return;ab.disabled=true;
+        try{await rpc("answer_question",{p_token:cur.token,p_id:q.id,p_answer:ai.value});await refreshTicket();}catch(x){ab.disabled=false;}});
+      li.appendChild(af);}
+    ul.appendChild(li);});
+  box.appendChild(ul);
+}
 function renderQA(){
-  const t=cur.t,box=$("qaBox");box.innerHTML="";
-  if(t.plan!=="premium"&&t.plan!=="plus"){box.appendChild(el("p","note","Anonimna vprašanja izžrebani osebi so del paketa Premium."));return;}
+  const t=cur.t,box=$("qaBox"),paid=t.plan==="premium"||t.plan==="plus";box.innerHTML="";
+  $("wishBox").classList.toggle("hidden",!paid);
+  if(!paid){box.appendChild(el("p","note","V paketu Premium vsak sam vpiše svojo željo in lahko izžrebani osebi pošlje anonimno vprašanje."));return;}
   box.appendChild(el("h3",null,"Vprašaj anonimno"));
   box.appendChild(el("p","note",`${t.r} vidi vprašanje, ne pa tega, kdo ga je poslal.`));
   const f=el("form","inline");const i=el("input");i.id="askInput";i.maxLength=200;i.placeholder="npr. Katero številko nogavic nosiš?";
@@ -878,23 +916,10 @@ function renderQA(){
   const msg=el("p","saved");box.appendChild(msg);
   f.addEventListener("submit",async e=>{e.preventDefault();if(i.value.trim().length<2)return;b.disabled=true;
     try{await rpc("ask_question",{p_token:cur.token,p_body:i.value});await refreshTicket();}
-    catch(x){msg.textContent=x.code==="TOO_MANY"?"Poslal si že 10 vprašanj.":"Vprašanja ni bilo mogoče poslati.";b.disabled=false;}});
+    catch(x){msg.textContent=x.code==="TOO_MANY"?"Poslal si že preveč vprašanj.":"Vprašanja ni bilo mogoče poslati.";b.disabled=false;}});
   if(t.asked.length){const ul=el("ul","qa");t.asked.forEach(q=>{const li=el("li");li.append(el("div","q",q.q),el("div","a",q.a?("Odgovor: "+q.a):"Čaka na odgovor."));ul.appendChild(li);});box.appendChild(ul);}
-  box.appendChild(el("h3",null,"Vprašanja zate"));
-  if(!t.inbox.length){box.appendChild(el("p","note","Zaenkrat te ni še nihče nič vprašal."));return;}
-  box.appendChild(el("p","note","Poslal jih je tvoj skrivni Božiček. Odgovor vidi samo on."));
-  const ul=el("ul","qa");
-  t.inbox.forEach((q,k)=>{const li=el("li");li.appendChild(el("div","q",q.q));
-    if(q.a){li.appendChild(el("div","a","Tvoj odgovor: "+q.a));}
-    else{const af=el("form","inline");const ai=el("input");ai.id="ans"+k;ai.maxLength=200;ai.placeholder="Tvoj odgovor";ai.setAttribute("aria-label","Odgovor na vprašanje");
-      const ab=el("button","btn sm","Odgovori");ab.type="submit";af.append(ai,ab);
-      af.addEventListener("submit",async e=>{e.preventDefault();if(!ai.value.trim())return;ab.disabled=true;
-        try{await rpc("answer_question",{p_token:cur.token,p_id:q.id,p_answer:ai.value});await refreshTicket();}catch(x){ab.disabled=false;}});
-      li.appendChild(af);}
-    ul.appendChild(li);});
-  box.appendChild(ul);
 }
-async function refreshTicket(){const t=await rpc("get_ticket",{p_token:cur.token});if(t){cur.t=t;renderQA();}}
+async function refreshTicket(){const t=await rpc("get_ticket",{p_token:cur.token});if(t){cur.t=t;renderQA();renderInbox();}}
 $("wishForm").addEventListener("submit",async e=>{e.preventDefault();const m=$("wishMsg");m.textContent="";
   try{await rpc("set_wish",{p_token:cur.token,p_wish:$("myWish").value});m.textContent="Shranjeno.";}catch(x){m.textContent="Želje ni bilo mogoče shraniti.";}});
 function showReveal(t,token){
@@ -904,6 +929,7 @@ function showReveal(t,token){
   const lg=$("rvLogo");if(t.logo&&/^data:image\//.test(t.logo)){lg.src=t.logo;lg.classList.remove("hidden");}else{lg.classList.add("hidden");lg.removeAttribute("src");}
   $("revealView").style.backgroundColor=/^#[0-9a-f]{6}$/.test(t.color||"")?t.color:"";
   if(token){$("myWish").value=t.my_wish||"";$("wishMsg").textContent="";renderQA();}
+  renderInbox();
   $("rvGiver").textContent=t.g;$("rvGroup").textContent=t.n?("Skrivni Božiček, "+t.n):"Skrivni Božiček";
   $("rvTarget").textContent=t.r;
   const f=$("rvFacts");f.innerHTML="";
