@@ -343,6 +343,9 @@ footer .candy{margin-bottom:34px}
 .upsell:hover{background:#fff}
 button.paid{border:0;cursor:pointer;font:inherit;font-size:.78rem;font-weight:700;padding:4px 9px;background:var(--red)}
 button.paid:hover{background:var(--ink)}
+.qa .a.big{color:var(--ink);font-weight:700;font-size:1.2rem;margin-top:6px;padding-left:14px;border-left:4px solid var(--red)}
+#rvAnswers .qa .q{font-size:1.05rem;color:var(--soft)}
+#rvAnswers.fresh .qa .q{color:var(--ink)}
 </style>
 </head>
 <body>
@@ -625,6 +628,7 @@ button.paid:hover{background:var(--ink)}
   <div class="snowfall"></div><div class="bunting"></div>
   <div class="rv-in">
     <div class="rv-g inbox hidden" id="rvInbox" aria-live="polite"></div>
+    <div class="rv-g inbox hidden" id="rvAnswers" aria-live="polite"></div>
     <div class="ticket">
       <div class="candy"></div>
       <div class="face" role="img" aria-label="Božiček"></div>
@@ -978,6 +982,22 @@ function renderInbox(){
     ul.appendChild(li);});
   box.appendChild(ul);
 }
+function novihOdg(n){return n===1?"Imaš 1 nov odgovor":n===2?"Imaš 2 nova odgovora":n<5?`Imaš ${n} nove odgovore`:`Imaš ${n} novih odgovorov`;}
+function renderAnswers(){
+  const t=cur.t,box=$("rvAnswers");box.innerHTML="";
+  const list=((cur.token&&t.asked)||[]).filter(q=>q.a);
+  if(!list.length){box.classList.add("hidden");return;}
+  const key="sb-odg-"+cur.token,id=q=>q.q+"\u0001"+q.a;
+  let seen=null;try{seen=new Set(JSON.parse(localStorage.getItem(key)||"[]"));}catch(e){}
+  const fresh=seen?list.filter(q=>!seen.has(id(q))).length:list.length;
+  box.classList.remove("hidden");box.classList.toggle("fresh",fresh>0);
+  box.appendChild(el("h3",null,fresh?novihOdg(fresh):"Odgovori na tvoja vprašanja"));
+  box.appendChild(el("p","note","Na tvoje anonimno vprašanje. Kdo je spraševal, ostane skrivnost."));
+  const ul=el("ul","qa");
+  list.forEach(q=>{const li=el("li");li.append(el("div","q",q.q),el("div","a big",q.a));ul.appendChild(li);});
+  box.appendChild(ul);
+  try{localStorage.setItem(key,JSON.stringify(list.map(id)));}catch(e){}
+}
 function renderQA(){
   const t=cur.t,box=$("qaBox"),paid=t.plan==="premium"||t.plan==="plus";box.innerHTML="";
   $("wishBox").classList.toggle("hidden",!paid);
@@ -992,7 +1012,7 @@ function renderQA(){
     catch(x){msg.textContent=x.code==="TOO_MANY"?"Poslal si že preveč vprašanj.":"Vprašanja ni bilo mogoče poslati.";b.disabled=false;}});
   if(t.asked.length){const ul=el("ul","qa");t.asked.forEach(q=>{const li=el("li");li.append(el("div","q",q.q),el("div","a",q.a?("Odgovor: "+q.a):"Čaka na odgovor."));ul.appendChild(li);});box.appendChild(ul);}
 }
-async function refreshTicket(){const t=await rpc("get_ticket",{p_token:cur.token});if(t){cur.t=t;renderQA();renderInbox();}}
+async function refreshTicket(){const t=await rpc("get_ticket",{p_token:cur.token});if(t){cur.t=t;renderQA();renderInbox();renderAnswers();}}
 $("wishForm").addEventListener("submit",async e=>{e.preventDefault();const m=$("wishMsg");m.textContent="";
   try{await rpc("set_wish",{p_token:cur.token,p_wish:$("myWish").value});m.textContent="Shranjeno.";}catch(x){m.textContent="Želje ni bilo mogoče shraniti.";}});
 function showReveal(t,token){
@@ -1002,7 +1022,7 @@ function showReveal(t,token){
   const lg=$("rvLogo");if(t.logo&&/^data:image\//.test(t.logo)){lg.src=t.logo;lg.classList.remove("hidden");}else{lg.classList.add("hidden");lg.removeAttribute("src");}
   $("revealView").style.backgroundColor=/^#[0-9a-f]{6}$/.test(t.color||"")?t.color:"";
   if(token){$("myWish").value=t.my_wish||"";$("wishMsg").textContent="";renderQA();}
-  renderInbox();
+  renderInbox();renderAnswers();
   $("rvGiver").textContent=t.g;$("rvGroup").textContent=t.n?("Skrivni Božiček, "+t.n):"Skrivni Božiček";
   $("rvTarget").textContent=t.r;
   const f=$("rvFacts");f.innerHTML="";
