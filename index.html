@@ -319,6 +319,30 @@ footer .candy{margin-bottom:34px}
 .paymsg b{font-family:"Courier Prime","Courier New",monospace;font-size:1.05rem}
 .nocode{font-size:.84rem;color:#fff!important;opacity:.9}
 .nocode a{color:#fff;text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+.plans-sec{padding-top:72px}
+.plans{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;align-items:stretch}
+@media (max-width:900px){.plans{grid-template-columns:1fr}}
+.plan{position:relative;border:1.5px solid var(--rule);border-radius:10px;padding:28px 26px;background:var(--paper);display:grid;gap:10px;grid-template-rows:auto auto auto 1fr auto}
+.plan h3{font-size:1.6rem}
+.plan .pprice{font-family:var(--display);font-weight:800;font-size:4rem;line-height:.95;letter-spacing:-.03em}
+.plan .pprice small{font-family:var(--body);font-weight:500;font-size:.95rem;letter-spacing:0;margin-left:8px;opacity:.75}
+.plan .pfor{font-size:.95rem;opacity:.75}
+.plan ul{list-style:none;margin:8px 0 14px;padding:0;display:grid;gap:8px;align-content:start}
+.plan li{padding-left:26px;position:relative}
+.plan li::before{content:"";position:absolute;left:0;top:.35em;width:14px;height:8px;border-left:2.5px solid currentColor;border-bottom:2.5px solid currentColor;transform:rotate(-45deg)}
+.plan .btn{font-size:1.05rem;padding:14px 20px}
+.plan.hot{background:var(--yellow);border-width:3px;transform:translateY(-10px)}
+.plan.hot .pprice{color:var(--red)}
+.plan.dark{background:var(--green);color:#fff;border-color:var(--green)}
+.plan.dark .btn.off{opacity:.6}
+.ptag{position:absolute;right:18px;top:-18px;background:var(--red);color:#fff;padding:4px 12px;border-radius:6px;transform:rotate(3deg);font-size:1.35rem;border:1.5px solid var(--ink)}
+@media (max-width:900px){.plan.hot{transform:none}}
+.upsell{display:grid;gap:2px;width:100%;text-align:left;background:var(--yellow);color:var(--ink);border:1.5px solid var(--ink);border-radius:6px;padding:10px 12px;cursor:pointer;margin-top:10px;font:inherit}
+.upsell b{font-size:.95rem}
+.upsell span{font-size:.86rem;text-decoration:underline;text-underline-offset:3px}
+.upsell:hover{background:#fff}
+button.paid{border:0;cursor:pointer;font:inherit;font-size:.78rem;font-weight:700;padding:4px 9px;background:var(--red)}
+button.paid:hover{background:var(--ink)}
 </style>
 </head>
 <body>
@@ -332,6 +356,7 @@ footer .candy{margin-bottom:34px}
     <div class="links">
       <button class="t" data-go="kako" type="button">Kako deluje</button>
       <button class="t" data-view="koledar" type="button">Adventni koledar</button>
+      <button class="t" data-go="paketi" type="button">Paketi</button>
       <button class="t" data-go="darila" type="button">Ideje za darila</button>
       <button class="t" data-go="podjetja" type="button">Za podjetja</button>
       <button class="btn k sm" data-go="zrebanje" type="button">Začni žrebanje</button>
@@ -395,7 +420,7 @@ footer .candy{margin-bottom:34px}
             <button class="btn sm" id="addExcl" type="button">Dodaj</button>
           </div>
           <div class="chips" id="chips"></div>
-          <p class="note hidden" id="exclLimit">Brezplačno je na voljo 1 izjema. Več izjem <span class="paid">Premium</span></p>
+          <p class="note hidden" id="exclLimit">Brezplačno je na voljo 1 izjema. Več izjem <button class="paid" data-go="paketi" type="button">Kupi Premium</button></p>
         </div>
         <div class="card hidden" id="resultsWrap">
           <div class="card-h"><h3>Izžrebano. Zdaj pošlji povezave.</h3><button class="btn sm" id="copyAll" type="button" style="margin-left:auto">Kopiraj vse</button></div>
@@ -417,7 +442,7 @@ footer .candy{margin-bottom:34px}
             <label for="pCode">Koda Premium (če jo imaš)</label>
             <div><input id="pCode" placeholder="SB-…" autocomplete="off" maxlength="14"><button class="btn sm" id="pCodeBtn" type="button">Uporabi</button></div>
             <p id="pMsg"></p>
-            <p class="nocode">Nimaš kode? <a data-buy="premium">Premium, 9 €</a> ali <a data-buy="plus">Plus, 19 €</a></p>
+            <button class="upsell" data-go="paketi" type="button"><b>Več kot 15 oseb ali anonimna vprašanja?</b><span>Premium od 9 € · poglej pakete</span></button>
             <div class="brand hidden" id="brandBox">
               <label for="logoFile">Logotip podjetja (PNG, JPG ali SVG)</label>
               <div class="rowb"><input id="logoFile" type="file" accept="image/png,image/jpeg,image/svg+xml,image/webp"><img id="logoPrev" class="hidden" alt="Predogled logotipa"></div>
@@ -434,6 +459,35 @@ footer .candy{margin-bottom:34px}
         </form>
       </aside>
     </div>
+  </div></section>
+
+  <section id="paketi" class="plans-sec"><div class="wrap">
+    <div class="head"><h2>Izberi paket</h2><p class="lede">Do 15 oseb je žrebanje zastonj. Za večje skupine, anonimna vprašanja in logotip podjetja sta na voljo dva plačljiva paketa.</p></div>
+    <div class="plans">
+      <div class="plan">
+        <h3>Brezplačno</h3>
+        <div class="pprice">0 €</div>
+        <p class="pfor">Za družino in prijatelje</p>
+        <ul><li>do 15 oseb</li><li>1 izjema</li><li>želje vpiše organizator</li><li>ideje za darila</li></ul>
+        <button class="btn wide" data-go="zrebanje" type="button">Začni žrebanje</button>
+      </div>
+      <div class="plan hot">
+        <span class="ptag hand">z anonimnimi vprašanji</span>
+        <h3>Premium</h3>
+        <div class="pprice">9 €<small>na žrebanje</small></div>
+        <p class="pfor">Za večje družbe in razrede</p>
+        <ul><li><b>do 50 oseb</b></li><li><b>neomejeno izjem</b></li><li><b>vsak sam vpiše svojo željo</b></li><li><b>anonimna vprašanja</b> izžrebani osebi</li></ul>
+        <a class="btn r wide" data-buy="premium">Kupi Premium</a>
+      </div>
+      <div class="plan dark">
+        <h3>Premium Plus</h3>
+        <div class="pprice">19 €<small>na žrebanje</small></div>
+        <p class="pfor">Za podjetja in društva</p>
+        <ul><li><b>do 300 oseb</b></li><li>vse iz paketa Premium</li><li><b>logotip podjetja</b> na strani vsakega udeleženca</li><li><b>barva podjetja</b> za ozadje</li></ul>
+        <a class="btn w wide" data-buy="plus">Kupi Premium Plus</a>
+      </div>
+    </div>
+    <p class="note">Plačaš s kartico. Koda se po plačilu vpiše sama in pride še po e-mailu. Ena koda velja za eno žrebanje. <button class="tlink" data-go="zrebanje" type="button">Kodo že imam</button></p>
   </div></section>
 
   <section class="advent"><div class="wrap">
@@ -469,16 +523,10 @@ footer .candy{margin-bottom:34px}
       <div><h3>Okence v adventnem koledarju</h3>
         <p>24 okenc, 24 dni, vsak dan ena trgovina. Na vaš dan je vaš izdelek edini, ki ga obiskovalci odprejo.</p>
         <ul><li>en dan je samo vaš</li><li>dodate lahko kodo za popust</li><li>okence ostane odprto do konca decembra</li></ul></div>
-      <div><h3>Premium za družine in ekipe</h3>
-        <div class="price">9 €<small>na skupino</small></div>
-        <ul><li>anonimna vprašanja izžrebani osebi</li><li>vsak sam vpiše svojo željo</li><li>do 50 oseb in neomejeno izjem</li></ul>
-        <p><b>Premium Plus, 19 €:</b> <span style="color:var(--soft)">do 300 oseb ter logotip in barva podjetja.</span></p>
-        <p style="color:var(--soft)">Plačaš s kartico. Koda se po plačilu vpiše sama.</p>
-        <div class="buy">
-          <a class="btn r" data-buy="premium">Kupi Premium, 9 €</a>
-          <a class="btn k" data-buy="plus">Kupi Premium Plus, 19 €</a>
-          <button class="tlink" data-go="zrebanje" type="button">Kodo že imam</button>
-        </div></div>
+      <div><h3>Žrebanje za celo ekipo</h3>
+        <p>Do 300 sodelavcev, z logotipom in barvo podjetja ter anonimnimi vprašanji.</p>
+        <ul><li>Premium Plus, 19 € na žrebanje</li><li>plačilo s kartico, koda takoj</li></ul>
+        <button class="btn k" data-go="paketi" type="button" style="justify-self:start">Poglej pakete</button></div>
     </div>
     <div class="contact"><b>Želite sodelovati?</b><span id="contactBox"></span></div>
   </div></section>
@@ -796,7 +844,7 @@ function updateMeta(){
   const n=state.people.length;
   $("count").textContent=`${n} od ${MAX_FREE}`;
   $("addPerson").disabled=n>=MAX_FREE;$("fullNote").classList.toggle("hidden",n<MAX_FREE);
-  $("fullNote").innerHTML=`Več kot ${MAX_FREE} oseb <span class="paid">${state.plan==="free"?"Premium":"Premium Plus"}</span>`;
+  $("fullNote").innerHTML=`Več kot ${MAX_FREE} oseb <button class="paid" data-go="paketi" type="button">${state.plan==="free"?"Kupi Premium":"Premium Plus"}</button>`;
   $("smallWarn").classList.toggle("hidden",cleanNames().length!==3);
   renderExclSelects();renderChips();updateSummary();
 }
