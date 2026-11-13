@@ -302,7 +302,10 @@ footer .candy{margin-bottom:34px}
 .inbox.fresh h3::before{background:var(--red);width:16px;height:16px;animation:pulse 1.2s ease-in-out infinite}
 .inbox.fresh .note{color:var(--ink)}
 .inbox.fresh .qa li{border-color:var(--ink)}
-.inbox .qa .q{font-size:1.1rem}
+.qa .q{font-family:var(--hand);font-weight:600;font-size:1.6rem;line-height:1.15}
+.inbox .qa .q{font-size:2rem}
+.inbox .qa .q::before{content:"„"}
+.inbox .qa .q::after{content:"“"}
 @keyframes pulse{50%{transform:scale(1.5)}}
 @media (prefers-reduced-motion:reduce){.inbox.fresh h3::before{animation:none}}
 #wishBox:not(.hidden)+#qaBox{margin-top:26px}
