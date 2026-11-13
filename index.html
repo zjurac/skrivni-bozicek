@@ -785,7 +785,7 @@ function renderQA(){
   const t=cur.t,box=$("qaBox");box.innerHTML="";
   if(t.plan!=="premium"&&t.plan!=="plus"){box.appendChild(el("p","note","Anonimna vprašanja izžrebani osebi so del paketa Premium."));return;}
   box.appendChild(el("h3",null,"Vprašaj anonimno"));
-  box.appendChild(el("p","note",`${t.r} bo videl vprašanje, ne pa, kdo ga je poslal.`));
+  box.appendChild(el("p","note",`${t.r} vidi vprašanje, ne pa tega, kdo ga je poslal.`));
   const f=el("form","inline");const i=el("input");i.id="askInput";i.maxLength=200;i.placeholder="npr. Katero številko nogavic nosiš?";
   const b=el("button","btn sm k","Pošlji");b.type="submit";f.append(i,b);box.appendChild(f);
   const msg=el("p","saved");box.appendChild(msg);
