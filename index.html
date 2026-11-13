@@ -706,7 +706,7 @@ const track=(item,place)=>{rpc("log_click",{p_item:item,p_place:place}).catch(()
 const isToken=c=>/^k[0-9a-f]{19}$/.test(c);
 const PAY_LINKS = {
   test:{premium:"https://buy.stripe.com/test_5kQeVe2I2aT0f1b9r63Je00",plus:"https://buy.stripe.com/test_aFaaEY0zU3qy06hcDi3Je01"},
-  live:{premium:"",plus:""}
+  live:{premium:"https://buy.stripe.com/eVq4gAgyS5yGbOZdHm3Je06",plus:"https://buy.stripe.com/3cIeVebey9OWaKV6eU3Je07"}
 };
 const QS = new URLSearchParams(location.search);
 const PAY_MODE = QS.has("test") ? "test" : "live";
