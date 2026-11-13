@@ -311,12 +311,21 @@ footer .candy{margin-bottom:34px}
 #wishBox:not(.hidden)+#qaBox{margin-top:26px}
 .rv-cal{background:var(--green);color:#fff;border:1.5px solid var(--ink);border-radius:10px;padding:20px 22px;display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:space-between}
 .rv-cal p{opacity:.85;font-size:.95rem;margin-top:2px}
+.buy{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center}
+.buy .btn{font-size:1rem;padding:12px 18px}
+.btn.off{opacity:.45;pointer-events:none}
+.teststrip{background:var(--yellow);color:var(--ink);font-weight:700}
+.paymsg{background:var(--yellow);color:var(--ink);border-radius:6px;padding:10px 12px;font-size:.92rem;font-weight:500;margin-bottom:14px}
+.paymsg b{font-family:"Courier Prime","Courier New",monospace;font-size:1.05rem}
+.nocode{font-size:.84rem;color:#fff!important;opacity:.9}
+.nocode a{color:#fff;text-decoration:underline;text-underline-offset:3px;cursor:pointer}
 </style>
 </head>
 <body>
 
 <!-- ===================== DOMOV ===================== -->
 <div id="home">
+  <div class="strip teststrip hidden" id="testStrip">Testni način: plačila niso prava in denar se ne odtegne.</div>
   <div class="strip">Žrebanje je brezplačno do 15 oseb. <b class="xmas"></b></div>
   <nav class="nav" aria-label="Glavna navigacija"><div class="wrap">
     <button class="logo" data-go="top" type="button">skrivni božiček<span>.</span></button>
@@ -403,10 +412,12 @@ footer .candy{margin-bottom:34px}
             <li>Proračun <b id="sBudget"></b></li>
             <li>Izjeme <b id="sExcl"></b></li>
           </ul>
+          <p class="paymsg hidden" id="payMsg" role="status"></p>
           <div class="pcode">
             <label for="pCode">Koda Premium (če jo imaš)</label>
             <div><input id="pCode" placeholder="SB-…" autocomplete="off" maxlength="14"><button class="btn sm" id="pCodeBtn" type="button">Uporabi</button></div>
             <p id="pMsg"></p>
+            <p class="nocode">Nimaš kode? <a data-buy="premium">Premium, 9 €</a> ali <a data-buy="plus">Plus, 19 €</a></p>
             <div class="brand hidden" id="brandBox">
               <label for="logoFile">Logotip podjetja (PNG, JPG ali SVG)</label>
               <div class="rowb"><input id="logoFile" type="file" accept="image/png,image/jpeg,image/svg+xml,image/webp"><img id="logoPrev" class="hidden" alt="Predogled logotipa"></div>
@@ -462,8 +473,12 @@ footer .candy{margin-bottom:34px}
         <div class="price">9 €<small>na skupino</small></div>
         <ul><li>anonimna vprašanja izžrebani osebi</li><li>vsak sam vpiše svojo željo</li><li>do 50 oseb in neomejeno izjem</li></ul>
         <p><b>Premium Plus, 19 €:</b> <span style="color:var(--soft)">do 300 oseb ter logotip in barva podjetja.</span></p>
-        <p style="color:var(--soft)">Po plačilu dobiš kodo, ki jo vpišeš pri žrebanju.</p>
-        <button class="btn" data-go="zrebanje" type="button" style="justify-self:start">Imam kodo</button></div>
+        <p style="color:var(--soft)">Plačaš s kartico. Koda se po plačilu vpiše sama.</p>
+        <div class="buy">
+          <a class="btn r" data-buy="premium">Kupi Premium, 9 €</a>
+          <a class="btn k" data-buy="plus">Kupi Premium Plus, 19 €</a>
+          <button class="tlink" data-go="zrebanje" type="button">Kodo že imam</button>
+        </div></div>
     </div>
     <div class="contact"><b>Želite sodelovati?</b><span id="contactBox"></span></div>
   </div></section>
@@ -521,6 +536,7 @@ footer .candy{margin-bottom:34px}
       <li>Supabase hrani bazo podatkov na strežniku v Londonu (Združeno kraljestvo).</li>
       <li>GitHub Pages gosti spletno stran in pri obisku vidi tvoj IP naslov.</li>
       <li>Google Fonts dostavi pisave, pri čemer Google vidi tvoj IP naslov.</li>
+      <li>Stripe obdela plačila s kartico. Podatkov o kartici ne vidimo in ne hranimo; v bazi ostane samo oznaka plačila in izdana koda.</li>
     </ul>
     <h2>Tvoje pravice</h2>
     <p>Zahtevaš lahko vpogled, popravek ali izbris svojih podatkov. Kdor ima povezavo udeleženca, lahko svojo željo kadar koli sam spremeni ali izbriše.</p>
@@ -640,6 +656,12 @@ async function rpc(fn,args){
 }
 const track=(item,place)=>{rpc("log_click",{p_item:item,p_place:place}).catch(()=>{});};
 const isToken=c=>/^k[0-9a-f]{19}$/.test(c);
+const PAY_LINKS = {
+  test:{premium:"https://buy.stripe.com/test_5kQeVe2I2aT0f1b9r63Je00",plus:"https://buy.stripe.com/test_aFaaEY0zU3qy06hcDi3Je01"},
+  live:{premium:"",plus:""}
+};
+const QS = new URLSearchParams(location.search);
+const PAY_MODE = QS.has("test") ? "test" : "live";
 const SANTA_PHOTO = "santa.jpg";       // npr. "santa.jpg", ko je fotografija dodana
 const $ = id => document.getElementById(id);
 const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -844,7 +866,7 @@ $("drawBtn").onclick=async()=>{
   if(!res){err.textContent="S temi izjemami žrebanje ni mogoče. Odstrani izjemo ali dodaj osebo.";return;}
   const wishes={};state.people.forEach(p=>{if(p.name.trim())wishes[p.name.trim()]=p.wish.trim();});
   const meta={n:$("gName").value.trim(),b:$("gBudget").value.trim(),d:$("gDate").value};
-  const base=(BASE_URL||location.href.split("#")[0]);
+  const base=(BASE_URL||location.href.split("#")[0].split("?")[0]);
   let links=null;
   btn.disabled=true;btn.textContent="Žrebam …";
   try{
@@ -982,6 +1004,28 @@ $("statForm").addEventListener("submit",async e=>{e.preventDefault();
   table("Kliki in odprta okenca",["Kaj","Kje","Število"],s.clicks.map(c=>[c.item.replace(/^okence-/,"Okence "),place[c.place]||c.place,c.n]));
   table("Žrebanja po dnevih",["Dan","Število"],s.days.map(d=>[new Date(d.d+"T12:00:00").toLocaleDateString("sl-SI"),d.n]));
 });
+/* Nakup */
+if(PAY_MODE==="test")$("testStrip").classList.remove("hidden");
+document.querySelectorAll("[data-buy]").forEach(a=>{
+  const url=PAY_LINKS[PAY_MODE][a.dataset.buy];
+  if(url){a.href=url;}else{a.classList.add("off");a.removeAttribute("href");a.setAttribute("aria-disabled","true");if(a.classList.contains("btn"))a.textContent="Nakup kmalu";}
+});
+async function claimPayment(sid){
+  const box=$("payMsg"),wait=ms=>new Promise(r=>setTimeout(r,ms));
+  box.classList.remove("hidden");box.textContent="Preverjam plačilo …";
+  go("zrebanje");
+  for(let i=0;i<15;i++){
+    let r=null;try{r=await rpc("claim_code",{p_session:sid});}catch(e){}
+    if(r&&r.code){
+      box.innerHTML="";
+      if(r.used){box.append("Plačilo je bilo uspešno, koda ",el("b",null,r.code)," pa je že porabljena za žrebanje.");return;}
+      box.append("Plačilo uspešno. Tvoja koda je ",el("b",null,r.code),". Zapiši si jo, če žrebanja ne boš naredil zdaj.");
+      $("pCode").value=r.code;$("pCodeBtn").click();return;
+    }
+    await wait(2000);
+  }
+  box.textContent="Plačila še ne vidim. Počakaj minuto in osveži to stran. Če je bil denar odtegnjen, kode pa ni, nam piši.";
+}
 function route(){
   const h=location.hash.replace("#","");
   if(h==="koledar"){renderDoors();show("koledar");return;}
@@ -1000,6 +1044,7 @@ addEventListener("hashchange",route);
     s.style.animationDuration=(9+Math.random()*10)+"s";s.style.animationDelay=(-Math.random()*18)+"s";box.appendChild(s);}});
 })();
 renderPeople();renderGifts(20);route();
+{const sid=QS.get("placilo")||"";if(/^cs_(test|live)_[A-Za-z0-9]+$/.test(sid))claimPayment(sid);}
 </script>
 </body>
 </html>
