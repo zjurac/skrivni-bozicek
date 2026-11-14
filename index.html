@@ -254,6 +254,7 @@ footer .candy{margin-bottom:34px}
 .ticket .candy{margin:0 -28px;border-top:0;border-radius:8px 8px 0 0}
 .face{width:136px;height:136px;border-radius:50%;border:1.5px solid var(--ink);background:#fff url(santa.jpg) -164px -40px/460px auto no-repeat;margin:-78px auto 10px;position:relative;z-index:1;transform:rotate(-4deg)}
 .hat-note{position:absolute;right:18px;top:26px;transform:rotate(8deg);color:var(--green)}
+@media (max-width:440px){.hat-note{font-size:1.1rem;right:12px;top:30px}}
 .target{color:var(--red)}
 .gbox{display:block;width:64px;height:64px;margin:6px auto 0}
 .count{background:var(--yellow);border:1.5px solid var(--ink);border-radius:6px;padding:8px 12px;text-align:center;font-weight:700}
@@ -346,6 +347,13 @@ button.paid:hover{background:var(--ink)}
 .qa .a.big{color:var(--ink);font-weight:700;font-size:1.2rem;margin-top:6px;padding-left:14px;border-left:4px solid var(--red)}
 #rvAnswers .qa .q{font-size:1.05rem;color:var(--soft)}
 #rvAnswers.fresh .qa .q{color:var(--ink)}
+@media (min-width:980px){
+  .rv-in{max-width:1040px;display:grid;grid-template-columns:400px minmax(0,1fr);gap:18px 24px;align-items:start}
+  .rv-in>*{grid-column:2;min-width:0}
+  .rv-in>.ticket{grid-column:1;grid-row:1/span 20;position:sticky;top:20px}
+  .rv-links{justify-content:flex-start}
+  .rv-g .gifts{grid-template-columns:repeat(3,1fr)}
+}
 </style>
 </head>
 <body>
@@ -1010,7 +1018,8 @@ function renderQA(){
   f.addEventListener("submit",async e=>{e.preventDefault();if(i.value.trim().length<2)return;b.disabled=true;
     try{await rpc("ask_question",{p_token:cur.token,p_body:i.value});await refreshTicket();}
     catch(x){msg.textContent=x.code==="TOO_MANY"?"Poslal si že preveč vprašanj.":"Vprašanja ni bilo mogoče poslati.";b.disabled=false;}});
-  if(t.asked.length){const ul=el("ul","qa");t.asked.forEach(q=>{const li=el("li");li.append(el("div","q",q.q),el("div","a",q.a?("Odgovor: "+q.a):"Čaka na odgovor."));ul.appendChild(li);});box.appendChild(ul);}
+  const waiting=t.asked.filter(q=>!q.a);
+  if(waiting.length){const ul=el("ul","qa");waiting.forEach(q=>{const li=el("li");li.append(el("div","q",q.q),el("div","a","Čaka na odgovor."));ul.appendChild(li);});box.appendChild(ul);}
 }
 async function refreshTicket(){const t=await rpc("get_ticket",{p_token:cur.token});if(t){cur.t=t;renderQA();renderInbox();renderAnswers();}}
 $("wishForm").addEventListener("submit",async e=>{e.preventDefault();const m=$("wishMsg");m.textContent="";
