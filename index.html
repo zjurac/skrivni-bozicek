@@ -721,7 +721,7 @@ const PAY_LINKS = {
   live:{premium:"https://buy.stripe.com/eVq4gAgyS5yGbOZdHm3Je06",plus:"https://buy.stripe.com/3cIeVebey9OWaKV6eU3Je07"}
 };
 const QS = new URLSearchParams(location.search);
-const PAY_MODE = QS.has("test") ? "test" : "live";
+const PAY_MODE = QS.has("live") ? "live" : "test";
 const SANTA_PHOTO = "santa.jpg";       // npr. "santa.jpg", ko je fotografija dodana
 const $ = id => document.getElementById(id);
 const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
