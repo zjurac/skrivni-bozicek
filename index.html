@@ -183,6 +183,7 @@ input:focus,select:focus{outline:none;border-color:var(--ink);box-shadow:0 0 0 3
 .shot.ph svg{width:34px;height:34px;opacity:.55}
 .shot.ph span{font-family:var(--hand);font-size:1.02rem;line-height:1.1;padding:0 12px}
 .sheet .shot{aspect-ratio:4/3;border-radius:6px;background:var(--sand);overflow:hidden;display:grid;place-items:center;margin:2px 0 2px}
+.gift .pkgs{display:block;font-size:.84rem;line-height:1.35;color:var(--soft);margin-top:8px}
 .gift h4{margin:4px 0 0;font-family:var(--display);font-weight:800;font-size:1.25rem;line-height:1.1;letter-spacing:-.01em}
 .gift .price{font-family:var(--display);font-weight:800;font-size:1.5rem;color:var(--red);margin-top:auto;padding-top:14px;font-variant-numeric:tabular-nums}
 .gift:hover{transform:translateY(-2px);border-color:var(--ink)}
@@ -745,7 +746,11 @@ function solveOnce(names,banned){const order=shuffle(names),used=new Set(),res={
 function hasMutual(res){for(const g in res){if(res[res[g]]===g)return true;}return false;}
 function drawPairs(names,exclusions){const banned=new Set();for(const [a,b] of exclusions){banned.add(a+"\u0000"+b);banned.add(b+"\u0000"+a);}
   let best=null;for(let t=0;t<40;t++){const r=solveOnce(names,banned);if(!r)return null;best=r;if(names.length<4||!hasMutual(r))break;}return best;}
-function pickGifts(list,budget,max){return list.filter(g=>g.p<=budget).sort((a,b)=>b.p-a.p).slice(0,max);}
+/* Partnerji so vedno prvi in jih proračun ne filtrira, primeri pa se filtrirajo. */
+function pickGifts(list,budget,max){
+  const part=list.filter(g=>g.partner),rest=list.filter(g=>!g.partner&&g.p<=budget).sort((a,b)=>b.p-a.p);
+  return [...part,...rest].slice(0,max);}
+const priceLbl = g => (g.from?"od ":"")+eur(g.p);
 /* Koledar: pred 1. decembrom vse zaprto, v decembru okenca od 1 do današnjega dne, po 24. vsa. */
 function calMode(now){
   /* ?dan=22 odpre koledar do tega dne, da lahko partnerju pokažeš njegovo okence tudi pred decembrom. */
@@ -789,6 +794,9 @@ if(SANTA_PHOTO){const im=new Image();im.alt="Božiček";im.src=SANTA_PHOTO;$("sa
 
 /* Izdelki. partner:true + url = pravi partner. Ostalo so primeri. */
 const GIFTS = [
+  {partner:true,t:"Pesem, napisana samo zanj ali zanjo",c:"PesemZaTebe",p:19.99,from:true,
+   pkgs:"Standard 19,99 € · Premium 24,99 € · Express 34,99 €",
+   img:"pesemzatebe.jpg",url:"https://pesemzatebe.si"},
   {t:"Domač cvetlični med z orehi",p:8,c:"Sladko"},
   {t:"Čokoladne praline, 12 kosov",p:9,c:"Sladko"},
   {t:"Sveže pražena kava, 250 g",p:10,c:"Kava"},
@@ -809,9 +817,11 @@ function shotEl(img,alt){
 function giftCard(g){
   const el=document.createElement(g.url?"a":"div");el.className="gift";
   if(g.url){el.href=g.url;el.target="_blank";el.rel="noopener sponsored";el.addEventListener("click",()=>track(g.t,"darila"));}
-  el.innerHTML=`<span class="mark hand ${g.partner?"p":""}">${g.partner?"partner":"tukaj je lahko vaš izdelek"}</span><span class="cat"></span><h4></h4><span class="price"></span>`;
+  el.innerHTML=`<span class="mark hand ${g.partner?"p":""}">${g.partner?"partner":"tukaj je lahko vaš izdelek"}</span><span class="cat"></span><h4></h4><span class="pkgs"></span><span class="price"></span>`;
   el.insertBefore(shotEl(g.img,g.t),el.querySelector(".cat"));
-  el.querySelector(".cat").textContent=g.c;el.querySelector("h4").textContent=g.t;el.querySelector(".price").textContent=eur(g.p);
+  el.querySelector(".cat").textContent=g.c;el.querySelector("h4").textContent=g.t;
+  const pk=el.querySelector(".pkgs");if(g.pkgs)pk.textContent=g.pkgs;else pk.remove();
+  el.querySelector(".price").textContent=priceLbl(g);
   return el;
 }
 function slotCard(){
@@ -861,7 +871,8 @@ const PARTNERS={
       text:"Avtomat, na katerega gost pihne in v nekaj sekundah vidi svoje promile. Za poroke, veselice, silvestrovanja in novoletne zabave podjetij. S kodo dobite 10 % popusta na osnovni paket — kodo povejte ob povpraševanju.",
       code:"BOZICEK10",url:"https://promilko.si",img:"promilko.jpg"},
   24:{partner:true,t:"Pesem, napisana samo zanj ali zanjo",c:"PesemZaTebe",
-      text:"Personalizirana pesem po vaši zgodbi. Darilo, ki ga nima nihče drug.",url:"https://pesemzatebe.si"}
+      text:"Personalizirana pesem po vaši zgodbi, posneta in poslana v MP3, besedilo pa v PDF. Standard 19,99 €, Premium 24,99 €, Express 34,99 €.",
+      url:"https://pesemzatebe.si",img:"pesemzatebe.jpg"}
 };
 function doorContent(day){
   if(PARTNERS[day])return PARTNERS[day];
@@ -1160,7 +1171,7 @@ function showReveal(t,token){
   const picks=pickGifts(GIFTS,b,3);
   picks.forEach(g=>{const li=document.createElement("li");const l=document.createElement("span");l.textContent=g.t;
     const sm=document.createElement("small");sm.textContent=g.c+(g.partner?"":" · prosto mesto");l.appendChild(sm);
-    const pr=document.createElement("b");pr.textContent=eur(g.p);li.append(l,pr);ul.appendChild(li);});
+    const pr=document.createElement("b");pr.textContent=priceLbl(g);li.append(l,pr);ul.appendChild(li);});
   $("rvGiftsTitle").textContent=`Nekaj idej do ${b} €`;
   $("rvGifts").dataset.has=picks.length?"1":"";
   $("rvClosed").classList.remove("hidden");$("rvOpened").classList.add("hidden");$("rvGifts").classList.add("hidden");
