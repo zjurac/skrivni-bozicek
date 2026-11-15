@@ -42,6 +42,8 @@ section{padding:84px 0}
 
 .strip{background:var(--green);color:#fff;font-size:.88rem;text-align:center;padding:8px 16px}
 .nav{border-bottom:1.5px solid var(--rule);background:var(--paper);position:sticky;top:0;z-index:20}
+section[id],#top{scroll-margin-top:96px}
+@media (prefers-reduced-motion:no-preference){html{scroll-behavior:auto}}
 .nav .wrap{display:flex;justify-content:space-between;align-items:center;height:62px;gap:12px}
 .logo{font-family:var(--display);font-weight:800;font-size:1.35rem;letter-spacing:-.03em;background:none;border:0;padding:0;cursor:pointer}
 .logo span{color:var(--red)}
@@ -793,15 +795,23 @@ function renderGifts(b){
 document.querySelector(".tabs").addEventListener("click",e=>{const b=e.target.dataset.b;if(b)renderGifts(+b);});
 
 /* Pogledi */
-function show(view){
+let curView="home";
+function show(view,keepScroll){
+  const changed=view!==curView;curView=view;
   $("home").classList.toggle("hidden",view!=="home");
   $("calView").classList.toggle("hidden",view!=="koledar");
   $("revealView").classList.toggle("hidden",view!=="reveal");
   $("privView").classList.toggle("hidden",view!=="zasebnost");
   $("statView").classList.toggle("hidden",view!=="statistika");
-  window.scrollTo(0,0);
+  if(changed&&!keepScroll)window.scrollTo(0,0);
 }
-function go(id){show("home");const el=$(id);if(el)el.scrollIntoView({behavior:reduce?"auto":"smooth",block:"start"});}
+function go(id){
+  const wasHome=curView==="home";
+  show("home",true);
+  const el=$(id);if(!el)return;
+  /* iz drugega pogleda skočimo brez animacije, znotraj strani pa gladko */
+  el.scrollIntoView({behavior:(reduce||!wasHome)?"auto":"smooth",block:"start"});
+}
 document.addEventListener("click",e=>{
   const v=e.target.closest("[data-view]");
   if(v){const name=v.dataset.view;try{history.replaceState(null,"",name==="home"?location.pathname+location.search:"#"+name);}catch(err){}
