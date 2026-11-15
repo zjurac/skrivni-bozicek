@@ -746,10 +746,10 @@ function solveOnce(names,banned){const order=shuffle(names),used=new Set(),res={
 function hasMutual(res){for(const g in res){if(res[res[g]]===g)return true;}return false;}
 function drawPairs(names,exclusions){const banned=new Set();for(const [a,b] of exclusions){banned.add(a+"\u0000"+b);banned.add(b+"\u0000"+a);}
   let best=null;for(let t=0;t<40;t++){const r=solveOnce(names,banned);if(!r)return null;best=r;if(names.length<4||!hasMutual(r))break;}return best;}
-/* Partnerji so vedno prvi in jih proračun ne filtrira, primeri pa se filtrirajo. */
+/* Proračun filtrira vse, partnerji so med preostalimi prvi. */
 function pickGifts(list,budget,max){
-  const part=list.filter(g=>g.partner),rest=list.filter(g=>!g.partner&&g.p<=budget).sort((a,b)=>b.p-a.p);
-  return [...part,...rest].slice(0,max);}
+  const ok=list.filter(g=>g.p<=budget);
+  return [...ok.filter(g=>g.partner),...ok.filter(g=>!g.partner).sort((a,b)=>b.p-a.p)].slice(0,max);}
 const priceLbl = g => (g.from?"od ":"")+eur(g.p);
 /* Koledar: pred 1. decembrom vse zaprto, v decembru okenca od 1 do današnjega dne, po 24. vsa. */
 function calMode(now){
