@@ -838,6 +838,39 @@ const state={people:[
   {name:"Luka",wish:"Družabna igra"},{name:"Teja",wish:"Rastlina za na okno"},{name:"Jure",wish:""}],
   excl:[["Ana","Miha"]],plan:"free",code:"",logo:""};
 $("gName").value="Družina Novak";$("gBudget").value="20";$("gDate").value="2026-12-24";
+
+/* Osnutek: vpisana imena preživijo odhod na plačilo in vrnitev */
+const DRAFT_KEY="sb-osnutek-2026";
+let draftT=null,draftOn=false;
+function saveDraft(){
+  if(!draftOn)return;
+  try{localStorage.setItem(DRAFT_KEY,JSON.stringify({v:1,t:Date.now(),
+    people:state.people.map(p=>({name:p.name,wish:p.wish})),excl:state.excl,
+    n:$("gName").value,b:$("gBudget").value,d:$("gDate").value}));}catch(e){}
+}
+function queueDraft(){draftOn=true;clearTimeout(draftT);draftT=setTimeout(saveDraft,400);}
+function clearDraft(){draftOn=false;clearTimeout(draftT);try{localStorage.removeItem(DRAFT_KEY);}catch(e){}}
+function loadDraft(){
+  let d=null;try{d=JSON.parse(localStorage.getItem(DRAFT_KEY)||"null");}catch(e){}
+  if(!d||d.v!==1||!Array.isArray(d.people)||!d.people.length)return false;
+  if(Date.now()-(d.t||0)>30*864e5){clearDraft();return false;}
+  if(!d.people.some(p=>String(p&&p.name||"").trim()))return false;
+  state.people=d.people.slice(0,300).map(p=>({name:String(p&&p.name||"").slice(0,30),wish:String(p&&p.wish||"").slice(0,80)}));
+  state.excl=Array.isArray(d.excl)?d.excl.filter(e=>Array.isArray(e)&&e.length===2).map(e=>[String(e[0]),String(e[1])]):[];
+  if(typeof d.n==="string")$("gName").value=d.n;
+  if(typeof d.b==="string")$("gBudget").value=d.b;
+  if(typeof d.d==="string"&&d.d)$("gDate").value=d.d;
+  draftOn=true;
+  const note=$("exampleNote");
+  if(note){note.classList.remove("hidden");note.innerHTML="";
+    note.append("Vrnil sem imena, ki si jih vpisal prej. ");
+    const b=document.createElement("button");b.type="button";b.className="tlink";b.textContent="Začni na novo";
+    b.onclick=()=>{clearDraft();location.reload();};note.appendChild(b);}
+  return true;
+}
+addEventListener("pagehide",saveDraft);
+addEventListener("visibilitychange",()=>{if(document.visibilityState==="hidden")saveDraft();});
+
 function cleanNames(){return state.people.map(p=>p.name.trim()).filter(Boolean);}
 function renderPeople(){
   const box=$("people");box.innerHTML="";
@@ -866,7 +899,7 @@ function updateSummary(){
   $("sBudget").textContent=$("gBudget").value?("do "+$("gBudget").value+" €"):"ni določen";
   $("sExcl").textContent=state.excl.length?state.excl.map(e=>e.join(" in ")).join(", "):"brez";
 }
-["gName","gBudget","gDate"].forEach(id=>$(id).addEventListener("input",updateSummary));
+["gName","gBudget","gDate"].forEach(id=>$(id).addEventListener("input",()=>{updateSummary();queueDraft();}));
 function renderExclSelects(){
   const names=cleanNames();
   for(const id of ["exA","exB"]){const s=$(id),prev=s.value;s.innerHTML="";
@@ -881,17 +914,17 @@ function renderChips(){
   state.excl.forEach(([a,b],k)=>{const c=document.createElement("span");c.className="chip";
     c.append(document.createTextNode(`${a} in ${b}`));
     const x=document.createElement("button");x.type="button";x.textContent="×";x.setAttribute("aria-label",`Odstrani izjemo ${a} in ${b}`);
-    x.onclick=()=>{state.excl.splice(k,1);renderChips();updateSummary();};c.appendChild(x);box.appendChild(c);});
+    x.onclick=()=>{state.excl.splice(k,1);renderChips();updateSummary();queueDraft();};c.appendChild(x);box.appendChild(c);});
   const full=state.excl.length>=MAX_EXCL_FREE;
   $("addExcl").disabled=full;$("exclLimit").classList.toggle("hidden",!full);
 }
-$("people").addEventListener("input",e=>{const t=e.target;if(t.dataset.i==null)return;state.people[+t.dataset.i][t.dataset.f]=t.value;$("exampleNote").classList.add("hidden");if(t.dataset.f==="name")updateMeta();});
-$("people").addEventListener("click",e=>{const d=e.target.dataset.del;if(d==null)return;state.people.splice(+d,1);renderPeople();});
-$("addPerson").onclick=()=>{if(state.people.length>=MAX_FREE)return;state.people.push({name:"",wish:""});renderPeople();$("pn"+(state.people.length-1)).focus();};
+$("people").addEventListener("input",e=>{const t=e.target;if(t.dataset.i==null)return;state.people[+t.dataset.i][t.dataset.f]=t.value;$("exampleNote").classList.add("hidden");if(t.dataset.f==="name")updateMeta();queueDraft();});
+$("people").addEventListener("click",e=>{const d=e.target.dataset.del;if(d==null)return;state.people.splice(+d,1);renderPeople();queueDraft();});
+$("addPerson").onclick=()=>{if(state.people.length>=MAX_FREE)return;state.people.push({name:"",wish:""});renderPeople();queueDraft();$("pn"+(state.people.length-1)).focus();};
 $("addExcl").onclick=()=>{const a=$("exA").value,b=$("exB").value;$("err").textContent="";
   if(!a||!b||a===b){$("err").textContent="Za izjemo izberi dve različni osebi.";return;}
   if(state.excl.some(([x,y])=>(x===a&&y===b)||(x===b&&y===a)))return;
-  state.excl.push([a,b]);renderChips();updateSummary();};
+  state.excl.push([a,b]);renderChips();updateSummary();queueDraft();};
 
 $("pCodeBtn").onclick=async()=>{
   const msg=$("pMsg"),code=$("pCode").value.trim().toUpperCase();msg.textContent="";
@@ -957,7 +990,7 @@ $("drawBtn").onclick=async()=>{
     box.appendChild(row);
   });
   $("copyAll").onclick=ev=>copyText(all.join("\n"),ev.currentTarget,null);
-  $("resultsWrap").classList.remove("hidden");
+  $("resultsWrap").classList.remove("hidden");clearDraft();
   $("resultsWrap").scrollIntoView({behavior:reduce?"auto":"smooth",block:"center"});
 };
 async function copyText(text,btn,inp){
@@ -1084,6 +1117,7 @@ $("statForm").addEventListener("submit",async e=>{e.preventDefault();
 /* Nakup */
 if(PAY_MODE==="test")$("testStrip").classList.remove("hidden");
 document.querySelectorAll("[data-buy]").forEach(a=>{
+  a.addEventListener("click",saveDraft);
   const url=PAY_LINKS[PAY_MODE][a.dataset.buy];
   if(url){a.href=url;}else{a.classList.add("off");a.removeAttribute("href");a.setAttribute("aria-disabled","true");if(a.classList.contains("btn"))a.textContent="Nakup kmalu";}
 });
@@ -1120,7 +1154,7 @@ addEventListener("hashchange",route);
     s.style.left=(Math.random()*100)+"%";s.style.fontSize=(10+Math.random()*16)+"px";s.style.opacity=.35+Math.random()*.5;
     s.style.animationDuration=(9+Math.random()*10)+"s";s.style.animationDelay=(-Math.random()*18)+"s";box.appendChild(s);}});
 })();
-renderPeople();renderGifts(20);route();
+loadDraft();renderPeople();renderGifts(20);route();
 {const sid=QS.get("placilo")||"";if(/^cs_(test|live)_[A-Za-z0-9]+$/.test(sid))claimPayment(sid);}
 </script>
 </body>
