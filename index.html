@@ -159,6 +159,14 @@ input:focus,select:focus{outline:none;border-color:var(--ink);box-shadow:0 0 0 3
   font-family:var(--hand);font-size:1.16rem;line-height:1.14;color:var(--red);letter-spacing:.01em;position:relative;z-index:1}
 .gift .mark.p{color:var(--green);background:#e9f2ed}
 .gift .cat{font-size:.82rem;color:var(--soft);margin-top:14px}
+/* prostor za fotografijo izdelka */
+.gift .shot{padding:0;margin:14px 18px 0;aspect-ratio:4/3;border-radius:6px;background:var(--sand);overflow:hidden;display:grid;place-items:center;position:relative;z-index:1}
+.gift .shot+.cat{margin-top:12px}
+.gift .shot img,.sheet .shot img{width:100%;height:100%;object-fit:cover;display:block}
+.shot.ph{border:1.5px dashed var(--rule);gap:7px;text-align:center;color:var(--soft)}
+.shot.ph svg{width:34px;height:34px;opacity:.55}
+.shot.ph span{font-family:var(--hand);font-size:1.02rem;line-height:1.1;padding:0 12px}
+.sheet .shot{aspect-ratio:4/3;border-radius:6px;background:var(--sand);overflow:hidden;display:grid;place-items:center;margin:2px 0 2px}
 .gift h4{margin:4px 0 0;font-family:var(--display);font-weight:800;font-size:1.25rem;line-height:1.1;letter-spacing:-.01em}
 .gift .price{font-family:var(--display);font-weight:800;font-size:1.5rem;color:var(--red);margin-top:auto;padding-top:14px;font-variant-numeric:tabular-nums}
 .gift:hover{transform:translateY(-2px);border-color:var(--ink)}
@@ -536,7 +544,7 @@ button.paid:hover{background:var(--ink)}
       <button type="button" data-b="30" aria-pressed="false">do 30 €</button>
     </div>
     <div class="gifts" id="giftGrid"></div>
-    <p class="note">Vsi izdelki zgoraj so primeri in vsako mesto je prosto. Če imate trgovino, je lahko tukaj vaš izdelek &mdash; <button class="tlink" type="button" data-go="podjetja">kako do tega</button>. Mesta pravih partnerjev so označena z zeleno.</p>
+    <p class="note">Vsi izdelki zgoraj so primeri in vsako mesto je prosto. Če imate trgovino, je lahko tukaj vaša fotografija, ime izdelka, cena in povezava &mdash; <button class="tlink" type="button" data-go="podjetja">kako do tega</button>. Mesta pravih partnerjev so označena z zeleno.</p>
   </div></section>
 
   <section id="podjetja" style="padding-top:10px"><div class="wrap">
@@ -638,6 +646,7 @@ button.paid:hover{background:var(--ink)}
     <button class="x" id="mClose" type="button" aria-label="Zapri">×</button>
     <div class="day" id="mDay"></div>
     <span class="hand" id="mMark"></span>
+    <div id="mShot"></div>
     <h3 id="mTitle" style="font-size:1.6rem"></h3>
     <p id="mText" style="color:var(--soft)"></p>
     <div class="price" id="mPrice"></div>
@@ -756,10 +765,18 @@ const GIFTS = [
   {t:"Darilni set naravne kozmetike",p:24,c:"Nega"},
   {t:"Paket lokalnih dobrot",p:29,c:"Sladko"}
 ];
+const PH_ICON='<svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="10" width="38" height="28" rx="3"/><circle cx="16.5" cy="20" r="3.2"/><path d="M8 34l10-10 7 7 6-5 9 8"/></svg>';
+function shotEl(img,alt){
+  const d=document.createElement("div");d.className="shot";
+  if(img){const i=document.createElement("img");i.src=img;i.alt=alt||"";i.loading="lazy";d.appendChild(i);}
+  else{d.classList.add("ph");d.innerHTML=PH_ICON+'<span>prostor za vašo fotografijo</span>';}
+  return d;
+}
 function giftCard(g){
   const el=document.createElement(g.url?"a":"div");el.className="gift";
   if(g.url){el.href=g.url;el.target="_blank";el.rel="noopener sponsored";el.addEventListener("click",()=>track(g.t,"darila"));}
   el.innerHTML=`<span class="mark hand ${g.partner?"p":""}">${g.partner?"partner":"tukaj je lahko vaš izdelek"}</span><span class="cat"></span><h4></h4><span class="price"></span>`;
+  el.insertBefore(shotEl(g.img,g.t),el.querySelector(".cat"));
   el.querySelector(".cat").textContent=g.c;el.querySelector("h4").textContent=g.t;el.querySelector(".price").textContent=eur(g.p);
   return el;
 }
@@ -829,10 +846,12 @@ function openDoor(day){
   $("mDay").textContent=day;
   if(c.free){
     $("mMark").textContent="še prosto";$("mTitle").textContent="To okence čaka na trgovino";
+    $("mShot").innerHTML="";$("mShot").appendChild(shotEl(null,""));
     $("mText").textContent="Na ta dan je lahko vaš izdelek edini, ki ga obiskovalci odprejo.";$("mPrice").textContent="";
     const b=document.createElement("button");b.className="btn k";b.type="button";b.textContent="Za trgovine";b.onclick=()=>{closeModal();go("podjetja");};act.appendChild(b);
   }else{
     $("mMark").textContent=c.partner?"partner":"tukaj je lahko vaš izdelek";$("mTitle").textContent=c.t;
+    $("mShot").innerHTML="";$("mShot").appendChild(shotEl(c.img,c.t));
     $("mText").textContent=c.text||c.c;$("mPrice").textContent=c.p?eur(c.p):"";
     if(c.code){const k=document.createElement("button");k.className="btn";k.type="button";k.textContent="Koda: "+c.code;
       k.onclick=async()=>{try{await navigator.clipboard.writeText(c.code);k.textContent="Kopirano";}catch(e){}};act.appendChild(k);}
