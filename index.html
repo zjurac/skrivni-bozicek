@@ -215,6 +215,7 @@ summary::after{content:"+";font-weight:600}
 details[open] summary::after{content:"–"}
 details p{padding:0 0 20px;color:var(--soft);max-width:62ch}
 footer{background:var(--ink);color:#fff;padding:34px 0;font-size:.9rem}
+footer .made{opacity:.75;font-size:.86rem}
 footer .wrap{display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between}
 
 /* Koledar */
@@ -588,7 +589,7 @@ button.paid:hover{background:var(--ink)}
     <details><summary>Kaj, če si partnerja že tako kupita darilo?</summary><p>Dodaj ju med izjeme, pa se ne bosta izžrebala med sabo.</p></details>
   </div></section>
 
-  <footer><div class="candy"></div><div class="wrap"><span>skrivni božiček. Vesel božič in srečno 2027!</span><span><button class="flink" data-view="zasebnost" type="button">Zasebnost</button> · <button class="flink" data-view="statistika" type="button">Za lastnika</button> · Narejeno na Koroškem.</span></div></footer>
+  <footer><div class="candy"></div><div class="wrap"><span>skrivni božiček. Vesel božič in srečno 2027!</span><span><button class="flink" data-view="zasebnost" type="button">Zasebnost</button> · <button class="flink" data-view="statistika" type="button">Za lastnika</button> · <a href="mailto:ziga@skrivnibozicek.si">ziga@skrivnibozicek.si</a></span><span class="made">Stran je naredil Žiga Jurač na Ravnah na Koroškem.</span></div></footer>
 </div>
 
 <!-- ===================== KOLEDAR ===================== -->
@@ -743,7 +744,7 @@ function calMode(now){const m=now.getMonth(),d=now.getDate();if(m===11)return {b
 
 let MAX_FREE = 15, MAX_EXCL_FREE = 1;
 const BASE_URL = "";
-const CONTACT_EMAIL = "";     // e-naslov za partnerje
+const CONTACT_EMAIL = "ziga@skrivnibozicek.si";     // e-naslov za partnerje
 const SB_URL = "https://krapdoomcvdevvtekimn.supabase.co";
 const SB_KEY = "sb_publishable_Dc50IM212uNoOY1OUlzN6A_NhBLp5fY";   // javni ključ, namenjen brskalniku
 async function rpc(fn,args){
@@ -767,7 +768,11 @@ const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
 const eur = n => n.toFixed(2).replace(".",",")+" €";
 
 if(SANTA_PHOTO){const im=new Image();im.alt="Božiček";im.src=SANTA_PHOTO;$("santaImg").replaceChildren(im);}
-$("contactBox").textContent=CONTACT_EMAIL?("Pišite na "+CONTACT_EMAIL):"Kontakt objavimo ob zagonu strani.";
+(function(){const b=$("contactBox");b.textContent="";
+  if(!CONTACT_EMAIL){b.textContent="Kontakt objavimo ob zagonu strani.";return;}
+  b.append("Pišite na ");
+  const a=document.createElement("a");a.href="mailto:"+CONTACT_EMAIL+"?subject="+encodeURIComponent("Sodelovanje – skrivni božiček");
+  a.textContent=CONTACT_EMAIL;b.appendChild(a);b.append(". Odgovorim v enem dnevu.");})();
 
 /* Izdelki. partner:true + url = pravi partner. Ostalo so primeri. */
 const GIFTS = [
@@ -1153,7 +1158,11 @@ async function openCode(v){
   if(ok===true){$(i).value="";return;}
   $(i).value="";$(i).placeholder=ok==="net"?"Ni povezave. Poskusi čez minuto.":"Te povezave ne prepoznam. Prilepi celo povezavo.";$(i).focus();}));
 
-$("privContact").textContent=CONTACT_EMAIL?("Upravljavec strani in kontakt za zahteve: "+CONTACT_EMAIL):"Kontakt upravljavca strani bo objavljen pred javnim zagonom.";
+(function(){const p=$("privContact");p.textContent="";
+  if(!CONTACT_EMAIL){p.textContent="Kontakt upravljavca strani bo objavljen pred javnim zagonom.";return;}
+  p.append("Upravljavec strani je Žiga Jurač, Ravne na Koroškem. Za vpogled, popravek ali izbris podatkov pišite na ");
+  const a=document.createElement("a");a.href="mailto:"+CONTACT_EMAIL+"?subject="+encodeURIComponent("Zahteva glede podatkov");
+  a.textContent=CONTACT_EMAIL;p.appendChild(a);p.append(".");})();
 $("statForm").addEventListener("submit",async e=>{e.preventDefault();
   const err=$("statErr"),out=$("statOut");err.textContent="";out.innerHTML="";
   let s;try{s=await rpc("get_stats",{p_key:$("statKey").value});}catch(x){err.textContent="Statistike zdaj ne morem naložiti.";return;}
