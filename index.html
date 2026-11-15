@@ -147,17 +147,31 @@ input:focus,select:focus{outline:none;border-color:var(--ink);box-shadow:0 0 0 3
 .gifts{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:28px}
 @media (max-width:980px){.gifts{grid-template-columns:repeat(2,1fr)}}
 @media (max-width:440px){.gifts{grid-template-columns:1fr}}
-.gift{position:relative;border:1.5px solid var(--rule);border-radius:8px;padding:44px 18px 18px;background:var(--paper);display:grid;gap:6px;align-content:start;min-height:190px;text-decoration:none;color:inherit}
-.gift::before{content:"";position:absolute;left:16px;top:14px;width:14px;height:14px;border-radius:50%;border:1.5px solid var(--rule);background:var(--sand)}
-.gift .cat{font-size:.82rem;color:var(--soft)}
-.gift h4{margin:0;font-family:var(--display);font-weight:800;font-size:1.25rem;line-height:1.1;letter-spacing:-.01em}
-.gift .price{font-family:var(--display);font-weight:800;font-size:1.5rem;color:var(--red);margin-top:auto;font-variant-numeric:tabular-nums}
-.gift .mark{position:absolute;right:14px;top:8px;transform:rotate(4deg);color:var(--soft)}
-.gift .mark.p{color:var(--green)}
-a.gift:hover{background:var(--sand)}
-.gift.slot{background:var(--yellow)}
-.gift.slot::before{background:var(--paper)}
-.gift.slot .btn{justify-self:start;margin-top:auto}
+.gift{position:relative;border:1.5px solid var(--rule);border-radius:8px;padding:0 0 16px;background:var(--paper);display:flex;flex-direction:column;min-height:210px;text-decoration:none;color:inherit;overflow:hidden;transition:transform .16s ease,border-color .16s ease}
+.gift>*:not(.mark){padding:0 18px;position:relative;z-index:1}
+/* luknjica, kot na darilni etiketi */
+.gift::before{content:"";position:absolute;left:15px;top:15px;width:13px;height:13px;border-radius:50%;border:1.5px solid var(--rule);background:var(--paper);z-index:2}
+/* snežinka kot vodni žig */
+.gift:not(.slot)::after{content:"";position:absolute;right:-14px;bottom:-16px;width:96px;height:96px;opacity:.55;pointer-events:none;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cg stroke='%23d6cec1' stroke-width='3' stroke-linecap='round' fill='none'%3E%3Cpath d='M50 8v84M14 29l72 42M14 71l72-42'/%3E%3Cpath d='M50 23l-9-9M50 23l9-9M50 77l-9 9M50 77l9 9M23 35l-12-2M23 35l2-12M77 65l12 2M77 65l-2 12M23 65l-12 2M23 65l2 12M77 35l12-2M77 35l-2-12'/%3E%3C/g%3E%3C/svg%3E") no-repeat center/contain}
+/* trak etikete */
+.gift .mark{display:block;padding:9px 14px 10px 38px;background:var(--sand);border-bottom:1.5px dashed var(--rule);
+  font-family:var(--hand);font-size:1.16rem;line-height:1.14;color:var(--red);letter-spacing:.01em;position:relative;z-index:1}
+.gift .mark.p{color:var(--green);background:#e9f2ed}
+.gift .cat{font-size:.82rem;color:var(--soft);margin-top:14px}
+.gift h4{margin:4px 0 0;font-family:var(--display);font-weight:800;font-size:1.25rem;line-height:1.1;letter-spacing:-.01em}
+.gift .price{font-family:var(--display);font-weight:800;font-size:1.5rem;color:var(--red);margin-top:auto;padding-top:14px;font-variant-numeric:tabular-nums}
+.gift:hover{transform:translateY(-2px);border-color:var(--ink)}
+.gift:not(.slot):hover .mark{background:#fceee9}
+a.gift:hover{background:var(--paper)}
+.gift.slot{background:var(--yellow);padding:22px 0 18px}
+.gift.slot::before{display:none}
+.gift.slot .cat{margin-top:0}
+.gift.slot h4{font-size:1.35rem}
+.gift.slot p{margin:6px 0 0}
+.gift.slot .btn{align-self:flex-start;margin-top:auto;margin-left:18px;padding-left:16px;padding-right:16px}
+.gift.slot>.btn{padding-top:9px;padding-bottom:9px}
+@media (max-width:440px){.gift{min-height:0}.gift .mark{font-size:1.08rem}}
 
 /* Podjetja */
 .biz{display:grid;grid-template-columns:repeat(3,1fr);border-top:1.5px solid var(--rule)}
@@ -522,7 +536,7 @@ button.paid:hover{background:var(--ink)}
       <button type="button" data-b="30" aria-pressed="false">do 30 €</button>
     </div>
     <div class="gifts" id="giftGrid"></div>
-    <p class="note">Listki z napisom "primer" kažejo, kako bo izbor videti. Izdelki trgovin bodo označeni z napisom "partner".</p>
+    <p class="note">Vsi izdelki zgoraj so primeri in vsako mesto je prosto. Če imate trgovino, je lahko tukaj vaš izdelek &mdash; <button class="tlink" type="button" data-go="podjetja">kako do tega</button>. Mesta pravih partnerjev so označena z zeleno.</p>
   </div></section>
 
   <section id="podjetja" style="padding-top:10px"><div class="wrap">
@@ -745,13 +759,13 @@ const GIFTS = [
 function giftCard(g){
   const el=document.createElement(g.url?"a":"div");el.className="gift";
   if(g.url){el.href=g.url;el.target="_blank";el.rel="noopener sponsored";el.addEventListener("click",()=>track(g.t,"darila"));}
-  el.innerHTML=`<span class="mark hand ${g.partner?"p":""}">${g.partner?"partner":"primer"}</span><span class="cat"></span><h4></h4><span class="price"></span>`;
+  el.innerHTML=`<span class="mark hand ${g.partner?"p":""}">${g.partner?"partner":"tukaj je lahko vaš izdelek"}</span><span class="cat"></span><h4></h4><span class="price"></span>`;
   el.querySelector(".cat").textContent=g.c;el.querySelector("h4").textContent=g.t;el.querySelector(".price").textContent=eur(g.p);
   return el;
 }
 function slotCard(){
   const el=document.createElement("div");el.className="gift slot";
-  el.innerHTML=`<span class="cat" style="color:inherit">Za trgovine</span><h4>Tukaj je lahko vaš izdelek</h4><button class="btn k sm" type="button">Kako do tega</button>`;
+  el.innerHTML=`<span class="cat" style="color:inherit">Za trgovine</span><h4>Rezervirajte svoje mesto</h4><p style="margin:2px 0 0;font-size:.9rem;line-height:1.35">Letos brezplačno, z vašo povezavo in logotipom.</p><button class="btn k sm" type="button">Kako do tega</button>`;
   el.querySelector("button").onclick=()=>go("podjetja");return el;
 }
 function renderGifts(b){
@@ -818,7 +832,7 @@ function openDoor(day){
     $("mText").textContent="Na ta dan je lahko vaš izdelek edini, ki ga obiskovalci odprejo.";$("mPrice").textContent="";
     const b=document.createElement("button");b.className="btn k";b.type="button";b.textContent="Za trgovine";b.onclick=()=>{closeModal();go("podjetja");};act.appendChild(b);
   }else{
-    $("mMark").textContent=c.partner?"partner":"primer";$("mTitle").textContent=c.t;
+    $("mMark").textContent=c.partner?"partner":"tukaj je lahko vaš izdelek";$("mTitle").textContent=c.t;
     $("mText").textContent=c.text||c.c;$("mPrice").textContent=c.p?eur(c.p):"";
     if(c.code){const k=document.createElement("button");k.className="btn";k.type="button";k.textContent="Koda: "+c.code;
       k.onclick=async()=>{try{await navigator.clipboard.writeText(c.code);k.textContent="Kopirano";}catch(e){}};act.appendChild(k);}
@@ -1075,7 +1089,7 @@ function showReveal(t,token){
   const b=+t.b||20,ul=$("rvGiftList");ul.innerHTML="";
   const picks=pickGifts(GIFTS,b,3);
   picks.forEach(g=>{const li=document.createElement("li");const l=document.createElement("span");l.textContent=g.t;
-    const sm=document.createElement("small");sm.textContent=g.c+(g.partner?"":" · primer");l.appendChild(sm);
+    const sm=document.createElement("small");sm.textContent=g.c+(g.partner?"":" · prosto mesto");l.appendChild(sm);
     const pr=document.createElement("b");pr.textContent=eur(g.p);li.append(l,pr);ul.appendChild(li);});
   $("rvGiftsTitle").textContent=`Nekaj idej do ${b} €`;
   $("rvGifts").dataset.has=picks.length?"1":"";
