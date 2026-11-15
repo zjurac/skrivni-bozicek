@@ -901,7 +901,7 @@ function openDoor(day){
     $("mText").textContent="Na ta dan je lahko vaš izdelek edini, ki ga obiskovalci odprejo.";$("mPrice").textContent="";
     const b=document.createElement("button");b.className="btn k";b.type="button";b.textContent="Za trgovine";b.onclick=()=>{closeModal();go("podjetja");};act.appendChild(b);
   }else{
-    $("mMark").textContent=c.partner?"partner":"tukaj je lahko vaš izdelek";$("mTitle").textContent=c.t;
+    $("mMark").textContent=c.partner?"partner · "+c.c:"tukaj je lahko vaš izdelek";$("mTitle").textContent=c.t;
     $("mShot").innerHTML="";$("mShot").appendChild(shotEl(c.img,c.t));
     $("mText").textContent=c.text||c.c;$("mPrice").textContent=c.p?eur(c.p):"";
     if(c.code){const k=document.createElement("button");k.className="btn";k.type="button";k.textContent="Koda: "+c.code;
