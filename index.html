@@ -437,15 +437,13 @@ html.noscroll{overscroll-behavior:none}
   .sheet .actions{margin-top:4px}
 }
 @media (max-width:820px){
-  .navhot{display:flex;gap:9px;justify-content:center;padding:8px 14px 12px;overflow:hidden;max-height:76px;
-    transition:max-height .2s ease,padding .2s ease,opacity .2s ease}
-  .nav.tuck .navhot{max-height:0;padding-top:0;padding-bottom:0;opacity:0}
-  .nav button.t.hot{transform:rotate(-.8deg)}
-  .nav .wrap{padding-bottom:2px}
+  .navhot{display:flex;gap:9px;justify-content:center;padding:6px 14px 10px}
+  .nav button.t.hot{transform:rotate(-.8deg);padding:4px 10px 5px}
   .navhot button.t{flex:1 1 0;max-width:220px;background:none;border:0;cursor:pointer;
-    font-weight:700;font-size:.92rem;text-align:center;white-space:nowrap}
-  .nav .wrap{height:56px}
-  section[id],#top{scroll-margin-top:122px}
+    font-weight:700;font-size:.89rem;text-align:center;white-space:nowrap}
+  .nav .wrap{height:50px;padding-bottom:2px}
+  .logo{font-size:1.18rem}
+  section[id],#top{scroll-margin-top:110px}
   .snowfall{display:none}
   .bunting::after{animation:none;opacity:.6}
 }
@@ -1430,12 +1428,6 @@ addEventListener("hashchange",route);
     s.style.left=(Math.random()*100)+"%";s.style.fontSize=(10+Math.random()*16)+"px";s.style.opacity=.35+Math.random()*.5;
     s.style.animationDuration=(9+Math.random()*10)+"s";s.style.animationDelay=(-Math.random()*18)+"s";box.appendChild(s);}});
 })();
-(function(){/* na telefonu se pasica umakne, ko bereš navzdol */
-  let last=scrollY,tuck=false;
-  addEventListener("scroll",()=>{const y=scrollY;
-    if(y>140&&y>last+6&&!tuck){tuck=true;document.querySelectorAll(".nav").forEach(n=>n.classList.add("tuck"));}
-    else if((y<last-6||y<90)&&tuck){tuck=false;document.querySelectorAll(".nav").forEach(n=>n.classList.remove("tuck"));}
-    last=y;},{passive:true});})();
 loadDraft();renderPeople();renderGifts(30);route();
 {const sid=QS.get("placilo")||"";if(/^cs_(test|live)_[A-Za-z0-9]+$/.test(sid))claimPayment(sid);}
 </script>
