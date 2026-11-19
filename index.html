@@ -985,6 +985,19 @@ const PARTNERS={
       text:"Personalizirana pesem po vaši zgodbi, posneta in poslana v MP3, besedilo pa v PDF. Standard 19,99 €, Premium 24,99 €, Express 34,99 €.",
       url:"https://pesemzatebe.si",img:"pesemzatebe.jpg"}
 };
+/* vrata v koledarju kazejo isto kot kartica na zacetni strani */
+(function(){const same={6:"Kavna sveča v keramični skodelici",24:"Pesem, napisana samo zanj ali zanjo"};
+  Object.keys(same).forEach(d=>{const g=GIFTS.find(x=>x.t===same[d]);
+    if(g)PARTNERS[d]={...g,code:PARTNERS[d].code||g.code};});})();
+function partnerDay(c){for(const d in PARTNERS){const p=PARTNERS[d];if(p&&p.t===c.t)return +d;}return 0;}
+function gotoCal(day){
+  closeModal();
+  try{history.replaceState(null,"","#koledar");}catch(e){}
+  renderDoors();show("koledar");
+  if(!day)return;
+  const up=calMode(new Date()).upTo;
+  if(day<=up)setTimeout(()=>openDoor(day),90);
+}
 function doorContent(day){
   if(PARTNERS[day])return PARTNERS[day];
   if(FREE.has(day))return {free:true};
@@ -1009,7 +1022,7 @@ function renderDoors(){
     const s=document.createElement("small");s.textContent=locked?`${day}. december`:isOpen?"odprto":"";
     b.append(document.createTextNode(day),s);
     b.setAttribute("aria-label",`${day}. december${locked?", še zaprto":""}`);
-    b.onclick=()=>openDoor(day);
+    b.dataset.day=day;b.onclick=()=>openDoor(day);
     box.appendChild(b);
   });
 }
@@ -1034,9 +1047,11 @@ function fillModal(c,day){
     $("mText").textContent=c.text||c.c;setPrice($("mPrice"),c);
     if(c.code&&day){const k=document.createElement("button");k.className="btn";k.type="button";k.textContent="Koda: "+c.code;
       k.onclick=async()=>{try{await navigator.clipboard.writeText(c.code);k.textContent="Kopirano";}catch(e){}};act.appendChild(k);}
-    else if(c.code){$("mNote").textContent="koda za popust čaka v adventnem koledarju";$("mNote").classList.remove("hidden");
+    else if(c.code){const pd=partnerDay(c);
+      $("mNote").textContent="koda za popust čaka v adventnem koledarju";
+      $("mNote").classList.remove("hidden");
       const b=document.createElement("button");b.className="btn";b.type="button";b.textContent="Poglej v koledarju";
-      b.onclick=()=>{closeModal();go("koledar");};act.appendChild(b);}
+      b.onclick=()=>gotoCal(pd);act.appendChild(b);}
     if(c.url){const a=document.createElement("a");a.className="btn k";a.href=c.url;a.target="_blank";a.rel="noopener sponsored";
       a.textContent="Poglej v trgovini";a.addEventListener("click",()=>track(c.t,"darila"));act.appendChild(a);}
   }
