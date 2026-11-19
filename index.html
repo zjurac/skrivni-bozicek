@@ -205,6 +205,13 @@ input:focus,select:focus{outline:none;border-color:var(--ink);box-shadow:0 0 0 3
 .thumb img{width:100%;height:100%;object-fit:cover;display:block}
 .thumb.on{border-color:var(--ink)}
 .price s{margin-left:9px;color:var(--soft);font-weight:400;font-size:.86em}
+.warnsave{margin:10px 0 0;font-size:.92rem;line-height:1.45;background:#fff4d6;border:1.5px solid var(--ink);border-radius:7px;padding:9px 12px}
+.saverow{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:14px}
+.saverow .note{margin:0;flex:1 1 220px}
+.livecount{margin:14px 0 0;font-family:var(--hand);font-size:1.25rem;color:#fff}
+.flagrow{display:flex;gap:10px;align-items:center;margin-top:26px;font-weight:600;cursor:pointer}
+.flagrow input{width:auto;margin:0}
+.price .wcode{display:block;margin-top:3px;font-family:var(--hand);font-style:normal;font-weight:400;font-size:.72em;line-height:1;color:var(--red)}
 .gift .pkgs{display:block;font-size:.84rem;line-height:1.35;color:var(--soft);margin-top:8px}
 .gift h4{margin:4px 0 0;font-family:var(--display);font-weight:800;font-size:1.25rem;line-height:1.1;letter-spacing:-.01em}
 .gift .price{font-family:var(--display);font-weight:800;font-size:1.5rem;color:var(--red);margin-top:auto;padding-top:14px;font-variant-numeric:tabular-nums}
@@ -481,6 +488,7 @@ html.noscroll{overscroll-behavior:none}
         <button class="btn w" data-go="zrebanje" type="button">Začni žrebanje</button>
         <button class="tlink" data-view="koledar" type="button">Poglej adventni koledar</button>
       </div>
+      <p class="livecount hidden" id="liveCount"></p>
       <form class="got" id="codeFormTop" autocomplete="off">
         <label for="codeInputTop">Si prejel povezavo? Prilepi jo sem in poglej, komu kupuješ.</label>
         <div><input id="codeInputTop" placeholder="Prilepi svojo povezavo"><button class="btn k" type="submit">Odpri</button></div>
@@ -535,7 +543,13 @@ html.noscroll{overscroll-behavior:none}
         <div class="card hidden" id="resultsWrap">
           <div class="card-h"><h3>Izžrebano. Zdaj pošlji povezave.</h3><button class="btn sm" id="copyAll" type="button" style="margin-left:auto">Kopiraj vse</button></div>
           <p class="note" style="margin-top:0">Vsaka povezava pokaže samo, komu kupuje ta oseba.</p>
+          <p class="warnsave">Povezave obstajajo samo tukaj. Če zapreš stran, jih ne moremo obnoviti — shrani si jih, preden jih razpošlješ.</p>
           <div class="results" id="results"></div>
+          <div class="saverow">
+            <a class="btn sm" id="mailAll" href="#">Pošlji si jih na e-mail</a>
+            <button class="btn sm" id="fileAll" type="button">Shrani kot datoteko</button>
+            <span class="note">Odpre se tvoj e-mail oziroma se prenese datoteka. Pri nas se ne shrani nič.</span>
+          </div>
         </div>
       </div>
       <aside class="side">
@@ -832,6 +846,7 @@ function galleryEl(c){
 function setPrice(el,g){
   el.textContent=g&&g.p?priceLbl(g):"";
   if(g&&g.p&&g.was){const s=document.createElement("s");s.textContent=eur(g.was);el.appendChild(s);}
+  if(g&&g.p&&g.code){const k=document.createElement("em");k.className="wcode";k.textContent="cena s kodo";el.appendChild(k);}
 }
 /* Koledar: pred 1. decembrom vse zaprto, v decembru okenca od 1 do današnjega dne, po 24. vsa. */
 function calMode(now){
@@ -879,7 +894,7 @@ const GIFTS = [
   {partner:true,t:"Kavna sveča v keramični skodelici",c:"CocoBee Candles",p:25.90,was:29.90,
    hot:"vroča ponudba",
    code:"SKRIVNIBOZICEK",text:"Več kot le sveča – ročno izdelana dišeča sveča iz čebeljega in kokosovega voska z nežno prasketajočim lesenim stenjem, vlita v keramično skodelico. Ko sveča dogori, skodelica ostane za vsakodnevno uporabo – popolno darilo, ki traja dlje od zadnjega plamena.",
-   img:"kavna-sveca.jpg",imgs:["kavna-sveca.jpg","kavna-sveca-2.jpg"],url:"https://cocobeecandles.com/discount/SKRIVNIBOZICEK?redirect=%2Fproducts%2Fcoffee-candle"},
+   img:"kavna-sveca.jpg",imgs:["kavna-sveca.jpg","kavna-sveca-2.jpg"],url:"https://cocobeecandles.com/sl/products/coffee-candle"},
   {partner:true,t:"CocoBee Discovery Set",c:"CocoBee Candles",p:39.90,
    text:"Darilni set treh ročno izdelanih sveč: dišeča sveča Sunset Ritual, sveča iz 100 % čebeljega voska in masažna sveča, ki se stopi v toplo negovalno olje za kožo. Tri različna doživetja v enem darilu – za vse, ki uživajo v majhnih trenutkih sprostitve.",
    img:"discovery-set.jpg",imgs:["discovery-set.jpg","discovery-set-2.jpg"],url:"https://cocobeecandles.com/sl/products/cocobee-discovery-set"},
@@ -986,7 +1001,7 @@ const PARTNERS={
 /* vrata v koledarju kazejo isto kot kartica na zacetni strani */
 (function(){const same={6:"Kavna sveča v keramični skodelici",24:"Pesem, napisana samo zanj ali zanjo"};
   Object.keys(same).forEach(d=>{const g=GIFTS.find(x=>x.t===same[d]);
-    if(g)PARTNERS[d]={...g,code:PARTNERS[d].code||g.code};});})();
+    if(g)PARTNERS[d]={...g,code:PARTNERS[d].code||g.code,url:PARTNERS[d].url||g.url};});})();
 function partnerDay(c){for(const d in PARTNERS){const p=PARTNERS[d];if(p&&p.t===c.t)return +d;}return 0;}
 function gotoCal(day){
   closeModal();
@@ -1219,6 +1234,14 @@ $("drawBtn").onclick=async()=>{
     box.appendChild(row);
   });
   $("copyAll").onclick=ev=>copyText(all.join("\n"),ev.currentTarget,null);
+  const ime=meta.n?" "+meta.n:"";
+  const txt="Povezave za skrivnega Božička"+ime+":\n\n"+all.join("\n")
+    +"\n\nVsako povezavo pošlji samo tisti osebi. Drugje teh povezav ni — hrani to sporočilo do izmenjave daril.";
+  $("mailAll").href="mailto:?subject="+encodeURIComponent("Skrivni Božiček – povezave"+ime)+"&body="+encodeURIComponent(txt);
+  $("fileAll").onclick=()=>{const b=new Blob([txt],{type:"text/plain;charset=utf-8"});
+    const a=document.createElement("a");a.href=URL.createObjectURL(b);
+    a.download="skrivni-bozicek-povezave.txt";document.body.appendChild(a);a.click();
+    setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},800);};
   $("resultsWrap").classList.remove("hidden");clearDraft();
   $("resultsWrap").scrollIntoView({behavior:reduce?"auto":"smooth",block:"center"});
 };
@@ -1334,6 +1357,10 @@ const PLAN_LBL={free:"Brezplačno",premium:"Premium",plus:"Plus"};
 let ADMIN_KEY="";
 function sbDate(v){try{return new Date(v).toLocaleDateString("sl-SI");}catch(e){return "";}}
 function osebWord(n){return n===1?"oseba":n===2?"osebi":n<=4?"osebe":"oseb";}
+function zrebWord(n){const d=n%100;return d===1?"žrebanje":d===2?"žrebanji":(d===3||d===4)?"žrebanja":"žrebanj";}
+/* stevec zrebanj na zacetni strani — prizge ga lastnik v statistiki */
+rpc("public_stats",{}).then(p=>{if(p&&p.show&&p.draws>0){
+  const e=$("liveCount");e.textContent="Letos že "+p.draws+" "+zrebWord(p.draws)+".";e.classList.remove("hidden");}}).catch(()=>{});
 $("statForm").addEventListener("submit",async e=>{e.preventDefault();
   const err=$("statErr"),out=$("statOut");err.textContent="";out.innerHTML="";
   ADMIN_KEY=$("statKey").value;
@@ -1344,6 +1371,19 @@ $("statForm").addEventListener("submit",async e=>{e.preventDefault();
   [["Žrebanj skupaj",s.draws],["Od tega plačanih",s.draws_paid],["Udeležencev skupaj",s.people],["Vprašanj med udeleženci",s.questions],["Še prostih kod",s.codes_free],["Porabljenih kod",s.codes_used]]
     .forEach(([k,v])=>{const t=el("div","tile");t.append(el("b",null,String(v)),el("span",null,k));tiles.appendChild(t);});
   out.appendChild(tiles);
+  /* stikalo: ali se stevilo zrebanj vidi na zacetni strani */
+  {const row=el("label","flagrow"),cb=document.createElement("input"),msg=el("span","note");
+   cb.type="checkbox";
+   let pf=null;try{pf=await rpc("public_stats",{});}catch(x){}
+   cb.checked=!!(pf&&pf.show);
+   msg.textContent=cb.checked?"Vidno na začetni strani.":"Skrito.";
+   row.append(cb,el("span",null,"Na začetni strani pokaži, koliko žrebanj je bilo letos"));
+   cb.onchange=async()=>{cb.disabled=true;msg.textContent="Shranjujem …";
+     let r=null;try{r=await rpc("set_flag",{p_key:ADMIN_KEY,p_flag:"show_draws",p_on:cb.checked});}catch(x){}
+     if(!r||r.error){cb.checked=!cb.checked;msg.textContent="Ni šlo. Poskusi znova.";}
+     else msg.textContent=cb.checked?("Vidno na začetni strani: "+r.draws+" "+zrebWord(r.draws)+"."):"Skrito.";
+     cb.disabled=false;};
+   out.append(row,msg);}
   const sec=(title,note)=>{out.appendChild(el("h2",null,title));if(note)out.appendChild(el("p","note",note));};
   const table=(head,rows,empty)=>{
     if(!rows.length){out.appendChild(el("p","note",empty||"Še ni podatkov."));return;}
