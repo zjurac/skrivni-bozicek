@@ -64,6 +64,12 @@ section[id],#top{scroll-margin-top:96px}
 .links{display:flex;align-items:center;gap:22px}
 .links button.t{background:none;border:0;padding:0;cursor:pointer;font-weight:500;font-size:.95rem;text-decoration:underline transparent;text-underline-offset:5px}
 .links button.t:hover{text-decoration-color:var(--ink)}
+.navhot{display:none}
+.nav button.t.hot{position:relative;font-weight:700;padding:5px 12px 6px;border-radius:7px;background:var(--yellow);border:1.5px solid var(--ink);box-shadow:2px 2px 0 rgba(23,19,15,.18);transform:rotate(-1.2deg)}
+.nav button.t.hot:hover{background:#ffd467;text-decoration-color:transparent}
+.nav button.t.hot.dot::after{content:"";position:absolute;top:-5px;right:-5px;width:10px;height:10px;border-radius:50%;background:var(--red);border:1.5px solid var(--paper)}
+@media (prefers-reduced-motion:no-preference){.nav button.t.hot.dot::after{animation:utrip 1.8s ease-in-out infinite}}
+@keyframes utrip{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.35);opacity:.75}}
 @media (max-width:820px){.links .t{display:none}}
 
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;font-weight:700;border-radius:6px;padding:12px 20px;cursor:pointer;border:1.5px solid var(--ink);background:var(--paper);color:var(--ink);text-decoration:none}
@@ -175,9 +181,12 @@ input:focus,select:focus{outline:none;border-color:var(--ink);box-shadow:0 0 0 3
   font-family:var(--hand);font-size:1.16rem;line-height:1.14;color:var(--red);letter-spacing:.01em;position:relative;z-index:1}
 .gift .mark.p{color:var(--green);background:#e9f2ed}
 .gift .cat{font-size:.82rem;color:var(--soft);margin-top:14px}
+.gift .shot+h4{margin-top:14px}
 /* prostor za fotografijo izdelka */
 .gift .shot{padding:0;margin:14px 18px 0;aspect-ratio:4/3;border-radius:6px;background:var(--sand);overflow:hidden;display:grid;place-items:center;position:relative;z-index:1}
 .gift .shot+.cat{margin-top:12px}
+.gift .hotbadge{position:absolute;top:0;left:0;z-index:3;background:var(--red);color:#fff;font-family:var(--hand);font-size:1.02rem;line-height:1.1;padding:6px 12px 7px;white-space:nowrap;border:1.5px solid var(--ink);border-top:0;border-left:0;border-radius:0 0 9px 0;box-shadow:2px 2px 0 rgba(23,19,15,.18)}
+.gift .hotbadge b{font-weight:400;color:#fff}
 .gift .shot img,.sheet .shot img{width:100%;height:100%;object-fit:cover;display:block}
 .shot.ph{border:1.5px dashed var(--rule);gap:9px;text-align:center;color:var(--soft);align-content:center;grid-auto-rows:max-content}
 .shot.ph svg{width:34px;height:34px;opacity:.55}
@@ -185,6 +194,16 @@ input:focus,select:focus{outline:none;border-color:var(--ink);box-shadow:0 0 0 3
 .sheet .shot{aspect-ratio:4/3;border-radius:6px;background:var(--sand);overflow:hidden;display:grid;place-items:center;margin:2px 0 2px}
 .gift[role=button]{cursor:pointer}
 .gift[role=button]:hover{box-shadow:0 10px 0 -4px rgba(23,19,15,.07)}
+.codehint,.gift .calhint{display:inline-block;background:var(--yellow);color:var(--ink);
+  border:1.5px solid var(--ink);border-radius:7px;padding:5px 12px 6px;
+  font-family:var(--hand);font-size:1.12rem;line-height:1.1;transform:rotate(-1.4deg)}
+.codehint{margin:14px 0 0;align-self:flex-start;width:fit-content}
+.gift .calhint{align-self:flex-start;margin:11px 0 2px}
+.gift .lead1{margin:7px 0 0;font-size:.88rem;line-height:1.42;color:var(--soft)}
+.thumbs{display:flex;gap:8px;margin-top:9px}
+.thumb{padding:0;width:70px;height:53px;border:1.5px solid var(--rule);border-radius:6px;overflow:hidden;background:var(--sand);cursor:pointer}
+.thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.thumb.on{border-color:var(--ink)}
 .price s{margin-left:9px;color:var(--soft);font-weight:400;font-size:.86em}
 .gift .pkgs{display:block;font-size:.84rem;line-height:1.35;color:var(--soft);margin-top:8px}
 .gift h4{margin:4px 0 0;font-family:var(--display);font-weight:800;font-size:1.25rem;line-height:1.1;letter-spacing:-.01em}
@@ -237,8 +256,8 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between}
 .door.open{background:var(--paper);color:var(--ink);border-style:dashed}
 .door.open small{color:var(--red);font-weight:700}
 @media (prefers-reduced-motion:reduce){.door{transition:none}}
-.modal{position:fixed;inset:0;background:rgba(23,19,15,.6);display:grid;place-items:center;padding:20px;z-index:40}
-.sheet{background:var(--paper);border:1.5px solid var(--ink);border-radius:10px;max-width:420px;width:100%;padding:28px;display:grid;gap:10px;position:relative}
+.modal{position:fixed;inset:0;background:rgba(23,19,15,.6);display:flex;padding:20px;z-index:40;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+.sheet{background:var(--paper);border:1.5px solid var(--ink);border-radius:10px;max-width:420px;width:100%;margin:auto;padding:28px;display:grid;gap:10px;position:relative}
 .sheet .day{font-family:var(--display);font-weight:800;font-size:4.5rem;line-height:.85;color:var(--red)}
 .sheet .price{font-family:var(--display);font-weight:800;font-size:1.8rem}
 .sheet .x{position:absolute;right:12px;top:10px;border:0;background:none;font-size:1.6rem;cursor:pointer;padding:6px 10px}
@@ -405,6 +424,33 @@ button.paid:hover{background:var(--ink)}
   .rv-links{justify-content:flex-start}
   .rv-g .gifts{grid-template-columns:repeat(3,1fr)}
 }
+
+/* --- modalno okno in telefon --- */
+html.noscroll,html.noscroll body{overflow:hidden}
+html.noscroll{overscroll-behavior:none}
+@media (max-width:540px){
+  .modal{padding:10px}
+  .sheet{padding:30px 18px 22px}
+  .sheet .x{position:fixed;right:14px;top:14px;width:40px;height:40px;padding:0;display:grid;place-items:center;
+    background:var(--paper);border:1.5px solid var(--ink);border-radius:50%;box-shadow:2px 2px 0 rgba(23,19,15,.2);z-index:5}
+  .sheet .day{font-size:3.4rem}
+  .sheet .actions{margin-top:4px}
+}
+@media (max-width:820px){
+  .navhot{display:flex;gap:9px;justify-content:center;padding:8px 14px 12px;overflow:hidden;max-height:76px;
+    transition:max-height .2s ease,padding .2s ease,opacity .2s ease}
+  .nav.tuck .navhot{max-height:0;padding-top:0;padding-bottom:0;opacity:0}
+  .nav button.t.hot{transform:rotate(-.8deg)}
+  .nav .wrap{padding-bottom:2px}
+  .navhot button.t{flex:1 1 0;max-width:220px;background:none;border:0;cursor:pointer;
+    font-weight:700;font-size:.92rem;text-align:center;white-space:nowrap}
+  .nav .wrap{height:56px}
+  section[id],#top{scroll-margin-top:122px}
+  .snowfall{display:none}
+  .bunting::after{animation:none;opacity:.6}
+}
+.snowfall{contain:paint}
+.snowfall span{will-change:transform}
 </style>
 </head>
 <body>
@@ -417,12 +463,16 @@ button.paid:hover{background:var(--ink)}
     <button class="logo" data-go="top" type="button">skrivni božiček<span>.</span></button>
     <div class="links">
       <button class="t" data-go="kako" type="button">Kako deluje</button>
-      <button class="t" data-view="koledar" type="button">Adventni koledar</button>
+      <button class="t hot dot" data-view="koledar" type="button">Adventni koledar</button>
       <button class="t" data-go="paketi" type="button">Paketi</button>
-      <button class="t" data-go="darila" type="button">Ideje za darila</button>
+      <button class="t hot" data-go="darila" type="button">Ideje za darila</button>
       <button class="t" data-go="podjetja" type="button">Za podjetja</button>
       <button class="btn k sm" data-go="zrebanje" type="button">Začni žrebanje</button>
     </div>
+  </div>
+  <div class="navhot">
+    <button class="t hot dot" data-view="koledar" type="button">Adventni koledar</button>
+    <button class="t hot" data-go="darila" type="button">Ideje za darila</button>
   </div></nav>
 
   <header class="hero" id="top"><div class="snowfall"></div><div class="bunting"></div><div class="wrap">
@@ -565,7 +615,7 @@ button.paid:hover{background:var(--ink)}
   </div></section>
 
   <section id="darila"><div class="wrap">
-    <div class="head"><h2>Kaj kupiti za 30 evrov, da ne konča v predalu</h2>
+    <div class="head"><h2 id="giftHead">Kaj kupiti za 30 evrov, da ne konča v predalu</h2>
       <p class="lede">Vsak ob svojem žrebu vidi nekaj idej, ki ustrezajo proračunu skupine.</p></div>
     <div class="tabs" role="group" aria-label="Proračun">
       <button type="button" data-b="15" aria-pressed="false">do 15 €</button>
@@ -609,6 +659,10 @@ button.paid:hover{background:var(--ink)}
   <nav class="nav"><div class="wrap">
     <button class="logo" data-view="home" type="button">skrivni božiček<span>.</span></button>
     <div class="links"><button class="btn k sm" data-view="home" type="button">Na žrebanje</button></div>
+  </div>
+  <div class="navhot">
+    <button class="t hot" data-go="darila" type="button">Ideje za darila</button>
+    <button class="t hot" data-go="paketi" type="button">Paketi</button>
   </div></nav>
   <div class="bunting"></div>
   <div class="wrap">
@@ -680,6 +734,7 @@ button.paid:hover{background:var(--ink)}
     <h3 id="mTitle" style="font-size:1.6rem"></h3>
     <p id="mText" style="color:var(--soft)"></p>
     <div class="price" id="mPrice"></div>
+    <p class="codehint hidden" id="mNote"></p>
     <div class="actions" id="mActions"></div>
   </div>
 </div>
@@ -754,6 +809,28 @@ function pickGifts(list,budget,max,over){
   const ok=list.filter(g=>over?g.p>=budget:g.p<=budget);
   return [...ok.filter(g=>g.partner),...ok.filter(g=>!g.partner).sort((a,b)=>over?a.p-b.p:b.p-a.p)].slice(0,max);}
 const priceLbl = g => (g.from?"od ":"")+eur(g.p);
+function snippet(t,n){t=String(t||"").trim();if(!t)return "";n=n||58;
+  if(t.length<=n)return t;
+  let c=t.slice(0,n);const sp=c.lastIndexOf(" ");if(sp>24)c=c.slice(0,sp);
+  return c.replace(/[\s.,;:–-]+$/,"")+" …";}
+function galleryEl(c){
+  const list=(c.imgs&&c.imgs.length)?c.imgs:(c.img?[c.img]:[]);
+  const wrap=document.createElement("div");
+  const main=shotEl(list[0]||null,c.t);wrap.appendChild(main);
+  if(list.length>1){
+    const row=document.createElement("div");row.className="thumbs";
+    list.forEach((src,i)=>{
+      const b=document.createElement("button");b.type="button";b.className="thumb"+(i?"":" on");
+      b.setAttribute("aria-label","Fotografija "+(i+1));
+      const im=document.createElement("img");im.src=src;im.alt="";b.appendChild(im);
+      b.onclick=()=>{const m=main.querySelector("img");if(m)m.src=src;
+        row.querySelectorAll(".thumb").forEach(t=>t.classList.remove("on"));b.classList.add("on");};
+      row.appendChild(b);
+    });
+    wrap.appendChild(row);
+  }
+  return wrap;
+}
 function setPrice(el,g){
   el.textContent=g&&g.p?priceLbl(g):"";
   if(g&&g.p&&g.was){const s=document.createElement("s");s.textContent=eur(g.was);el.appendChild(s);}
@@ -802,11 +879,12 @@ if(SANTA_PHOTO){const im=new Image();im.alt="Božiček";im.src=SANTA_PHOTO;$("sa
 /* Izdelki. partner:true + url = pravi partner. Ostalo so primeri. */
 const GIFTS = [
   {partner:true,t:"Kavna sveča v keramični skodelici",c:"CocoBee Candles",p:25.90,was:29.90,
-   code:"SKRIVNIBOZICEK",text:"Več kot le sveča – ročno izdelana dišeča sveča iz čebeljega in kokosovega voska z nežno prasketajočim lesenim stenjem, vlita v keramično skodelico. Ko sveča dogori, skodelica ostane za vsakodnevno uporabo – popolno darilo, ki traja dlje od zadnjega plamena. S kodo SKRIVNIBOZICEK je 25,90 € namesto 29,90 €, do 24. decembra.",
-   img:"kavna-sveca.jpg",url:"https://cocobeecandles.com/discount/SKRIVNIBOZICEK?redirect=%2Fproducts%2Fcoffee-candle"},
+   hot:"vroča ponudba",
+   code:"SKRIVNIBOZICEK",text:"Več kot le sveča – ročno izdelana dišeča sveča iz čebeljega in kokosovega voska z nežno prasketajočim lesenim stenjem, vlita v keramično skodelico. Ko sveča dogori, skodelica ostane za vsakodnevno uporabo – popolno darilo, ki traja dlje od zadnjega plamena.",
+   img:"kavna-sveca.jpg",imgs:["kavna-sveca.jpg","kavna-sveca-2.jpg"],url:"https://cocobeecandles.com/discount/SKRIVNIBOZICEK?redirect=%2Fproducts%2Fcoffee-candle"},
   {partner:true,t:"CocoBee Discovery Set",c:"CocoBee Candles",p:39.90,
    text:"Darilni set treh ročno izdelanih sveč: dišeča sveča Sunset Ritual, sveča iz 100 % čebeljega voska in masažna sveča, ki se stopi v toplo negovalno olje za kožo. Tri različna doživetja v enem darilu – za vse, ki uživajo v majhnih trenutkih sprostitve.",
-   img:"discovery-set.jpg",url:"https://cocobeecandles.com/sl/products/cocobee-discovery-set"},
+   img:"discovery-set.jpg",imgs:["discovery-set.jpg","discovery-set-2.jpg"],url:"https://cocobeecandles.com/sl/products/cocobee-discovery-set"},
   {partner:true,t:"Pesem, napisana samo zanj ali zanjo",c:"PesemZaTebe",p:19.99,from:true,
    pkgs:"Standard 19,99 € · Premium 24,99 € · Express 34,99 €",
    img:"pesemzatebe.jpg",url:"https://pesemzatebe.si"},
@@ -836,10 +914,19 @@ function giftCard(g){
     const open=()=>openGift(g);
     el.addEventListener("click",open);
     el.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();open();}});}
-  el.innerHTML=`<span class="mark hand ${g.partner?"p":""}">${g.partner?"partner":"tukaj je lahko vaš izdelek"}</span><span class="cat"></span><h4></h4><span class="pkgs"></span><span class="price"></span>`;
-  el.insertBefore(shotEl(g.img,g.t),el.querySelector(".cat"));
-  el.querySelector(".cat").textContent=g.c;el.querySelector("h4").textContent=g.t;
+  el.innerHTML=`<span class="mark hand ${g.partner?"p":""}">${g.partner?"partner · "+g.c:"tukaj je lahko vaš izdelek"}</span><span class="cat"></span><h4></h4><span class="pkgs"></span><span class="price"></span>`;
+  const sh=shotEl(g.img,g.t);
+  if(g.hot){const hb=document.createElement("span");hb.className="hotbadge";hb.innerHTML="\u2744 <b>"+g.hot+"</b>";sh.appendChild(hb);}
+  el.insertBefore(sh,el.querySelector(".cat"));
+  const cat=el.querySelector(".cat");
+  if(g.partner)cat.remove();else cat.textContent=g.c;
+  el.querySelector("h4").textContent=g.t;
   const pk=el.querySelector(".pkgs");if(g.pkgs)pk.textContent=g.pkgs;else pk.remove();
+  const lead=g.lead||snippet(g.text);
+  if(lead){const p=document.createElement("p");p.className="lead1";p.textContent=lead;
+    el.insertBefore(p,el.querySelector("h4").nextSibling);}
+  if(g.code){const h=document.createElement("span");h.className="calhint hand";h.textContent="koda za popust v koledarju";
+    el.insertBefore(h,el.querySelector(".price"));}
   setPrice(el.querySelector(".price"),g);
   return el;
 }
@@ -850,6 +937,7 @@ function slotCard(){
 }
 function renderGifts(b,over){
   const grid=$("giftGrid");grid.innerHTML="";
+  $("giftHead").textContent=(over?"Kaj kupiti za več kot "+b:"Kaj kupiti za "+b)+" evrov, da ne konča v predalu";
   pickGifts(GIFTS,b,7,over).forEach(g=>grid.appendChild(giftCard(g)));grid.appendChild(slotCard());
   document.querySelectorAll(".tabs button").forEach(x=>x.setAttribute("aria-pressed",String(+x.dataset.b===b&&!!x.dataset.over===!!over)));
 }
@@ -888,7 +976,8 @@ const CODES={5:"ADVENT10",14:"DARILO5"};
 const PARTNERS={
   6:{partner:true,t:"Kavna sveča v keramični skodelici",c:"CocoBee Candles",
       text:"Več kot le sveča – ročno izdelana dišeča sveča iz čebeljega in kokosovega voska z nežno prasketajočim lesenim stenjem, vlita v keramično skodelico. Ko sveča dogori, skodelica ostane za vsakodnevno uporabo – popolno darilo, ki traja dlje od zadnjega plamena. S kodo SKRIVNIBOZICEK je 25,90 € namesto 29,90 €, do 24. decembra.",
-      p:25.90,was:29.90,code:"SKRIVNIBOZICEK",url:"https://cocobeecandles.com/discount/SKRIVNIBOZICEK?redirect=%2Fproducts%2Fcoffee-candle",img:"kavna-sveca.jpg"},
+      p:25.90,was:29.90,code:"SKRIVNIBOZICEK",url:"https://cocobeecandles.com/discount/SKRIVNIBOZICEK?redirect=%2Fproducts%2Fcoffee-candle",
+      img:"kavna-sveca.jpg",imgs:["kavna-sveca.jpg","kavna-sveca-2.jpg"]},
   1:{partner:true,t:"Alkotester na vaši zabavi",c:"Promilko",
       text:"Avtomat, na katerega gost pihne in v nekaj sekundah vidi svoje promile. Za poroke, veselice, silvestrovanja in novoletne zabave podjetij. S kodo dobite 10 % popusta na osnovni paket — kodo povejte ob povpraševanju.",
       code:"BOZICEK10",url:"https://promilko.si",img:"promilko.jpg"},
@@ -931,6 +1020,7 @@ function openDoor(day){
 }
 function fillModal(c,day){
   const act=$("mActions");act.innerHTML="";
+  $("mNote").textContent="";$("mNote").classList.add("hidden");
   const dd=$("mDay");
   if(day){dd.textContent=day;dd.classList.remove("hidden");}else{dd.textContent="";dd.classList.add("hidden");}
   if(c.free){
@@ -940,17 +1030,20 @@ function fillModal(c,day){
     const b=document.createElement("button");b.className="btn k";b.type="button";b.textContent="Za trgovine";b.onclick=()=>{closeModal();go("podjetja");};act.appendChild(b);
   }else{
     $("mMark").textContent=c.partner?"partner · "+c.c:"tukaj je lahko vaš izdelek";$("mTitle").textContent=c.t;
-    $("mShot").innerHTML="";$("mShot").appendChild(shotEl(c.img,c.t));
+    $("mShot").innerHTML="";$("mShot").appendChild(galleryEl(c));
     $("mText").textContent=c.text||c.c;setPrice($("mPrice"),c);
-    if(c.code){const k=document.createElement("button");k.className="btn";k.type="button";k.textContent="Koda: "+c.code;
+    if(c.code&&day){const k=document.createElement("button");k.className="btn";k.type="button";k.textContent="Koda: "+c.code;
       k.onclick=async()=>{try{await navigator.clipboard.writeText(c.code);k.textContent="Kopirano";}catch(e){}};act.appendChild(k);}
+    else if(c.code){$("mNote").textContent="koda za popust čaka v adventnem koledarju";$("mNote").classList.remove("hidden");
+      const b=document.createElement("button");b.className="btn";b.type="button";b.textContent="Poglej v koledarju";
+      b.onclick=()=>{closeModal();go("koledar");};act.appendChild(b);}
     if(c.url){const a=document.createElement("a");a.className="btn k";a.href=c.url;a.target="_blank";a.rel="noopener sponsored";
       a.textContent="Poglej v trgovini";a.addEventListener("click",()=>track(c.t,"darila"));act.appendChild(a);}
   }
   $("mMark").style.color=c.partner?"var(--green)":"var(--soft)";
-  $("modal").classList.remove("hidden");$("mClose").focus();
+  $("modal").classList.remove("hidden");document.documentElement.classList.add("noscroll");$("modal").scrollTop=0;$("mClose").focus();
 }
-function closeModal(){$("modal").classList.add("hidden");}
+function closeModal(){$("modal").classList.add("hidden");document.documentElement.classList.remove("noscroll");}
 $("mClose").onclick=closeModal;
 $("modal").addEventListener("click",e=>{if(e.target===$("modal"))closeModal();});
 addEventListener("keydown",e=>{if(e.key==="Escape")closeModal();});
@@ -1317,10 +1410,17 @@ addEventListener("hashchange",route);
   const t=d===0?"Danes je božič!":d===1?"Do božiča je še 1 dan.":`Do božiča je še ${d} dni.`;
   document.querySelectorAll(".xmas").forEach(e=>e.textContent=t);
   document.querySelectorAll(".xmasLong").forEach(e=>e.textContent=d===0?"Danes je božič!":t+" Čas za nakup še je.");
-  document.querySelectorAll(".snowfall").forEach(box=>{for(let i=0;i<18;i++){const s=document.createElement("span");s.textContent=i%3?"❄":"❅";
+  const SNOWN=innerWidth<820?0:18;
+  document.querySelectorAll(".snowfall").forEach(box=>{for(let i=0;i<SNOWN;i++){const s=document.createElement("span");s.textContent=i%3?"❄":"❅";
     s.style.left=(Math.random()*100)+"%";s.style.fontSize=(10+Math.random()*16)+"px";s.style.opacity=.35+Math.random()*.5;
     s.style.animationDuration=(9+Math.random()*10)+"s";s.style.animationDelay=(-Math.random()*18)+"s";box.appendChild(s);}});
 })();
+(function(){/* na telefonu se pasica umakne, ko bereš navzdol */
+  let last=scrollY,tuck=false;
+  addEventListener("scroll",()=>{const y=scrollY;
+    if(y>140&&y>last+6&&!tuck){tuck=true;document.querySelectorAll(".nav").forEach(n=>n.classList.add("tuck"));}
+    else if((y<last-6||y<90)&&tuck){tuck=false;document.querySelectorAll(".nav").forEach(n=>n.classList.remove("tuck"));}
+    last=y;},{passive:true});})();
 loadDraft();renderPeople();renderGifts(30);route();
 {const sid=QS.get("placilo")||"";if(/^cs_(test|live)_[A-Za-z0-9]+$/.test(sid))claimPayment(sid);}
 </script>
