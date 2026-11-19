@@ -893,14 +893,14 @@ if(SANTA_PHOTO){const im=new Image();im.alt="Božiček";im.src=SANTA_PHOTO;$("sa
 
 /* Izdelki. partner:true + url = pravi partner. Ostalo so primeri. */
 const GIFTS = [
-  {partner:true,t:"Kavna sveča v keramični skodelici",c:"CocoBee Candles",p:25.90,was:29.90,
+  {partner:true,t:"Kavna sveča v keramični skodelici",c:"CocoBee Candles",p:25.90,was:29.90,since:"19. 11. 2026",
    hot:"vroča ponudba",
    code:"SKRIVNIBOZICEK",text:"Več kot le sveča – ročno izdelana dišeča sveča iz čebeljega in kokosovega voska z nežno prasketajočim lesenim stenjem, vlita v keramično skodelico. Ko sveča dogori, skodelica ostane za vsakodnevno uporabo – popolno darilo, ki traja dlje od zadnjega plamena.",
    img:"kavna-sveca.jpg",imgs:["kavna-sveca.jpg","kavna-sveca-2.jpg"],url:"https://cocobeecandles.com/sl/products/coffee-candle"},
-  {partner:true,t:"CocoBee Discovery Set",c:"CocoBee Candles",p:39.90,
+  {partner:true,t:"CocoBee Discovery Set",c:"CocoBee Candles",p:39.90,since:"19. 11. 2026",
    text:"Darilni set treh ročno izdelanih sveč: dišeča sveča Sunset Ritual, sveča iz 100 % čebeljega voska in masažna sveča, ki se stopi v toplo negovalno olje za kožo. Tri različna doživetja v enem darilu – za vse, ki uživajo v majhnih trenutkih sprostitve.",
    img:"discovery-set.jpg",imgs:["discovery-set.jpg","discovery-set-2.jpg"],url:"https://cocobeecandles.com/sl/products/cocobee-discovery-set"},
-  {partner:true,t:"Pesem, napisana samo zanj ali zanjo",c:"PesemZaTebe",p:19.99,from:true,
+  {partner:true,t:"Pesem, napisana samo zanj ali zanjo",c:"PesemZaTebe",p:19.99,from:true,since:"15. 11. 2026",
    pkgs:"Standard 19,99 € · Premium 24,99 € · Express 34,99 €",
    img:"pesemzatebe.jpg",url:"https://pesemzatebe.si"},
   {t:"Domač cvetlični med z orehi",p:8,c:"Sladko"},
@@ -993,7 +993,7 @@ const PARTNERS={
       text:"Več kot le sveča – ročno izdelana dišeča sveča iz čebeljega in kokosovega voska z nežno prasketajočim lesenim stenjem, vlita v keramično skodelico. Ko sveča dogori, skodelica ostane za vsakodnevno uporabo – popolno darilo, ki traja dlje od zadnjega plamena. S kodo SKRIVNIBOZICEK je 25,90 € namesto 29,90 €, do 24. decembra.",
       p:25.90,was:29.90,code:"SKRIVNIBOZICEK",url:"https://cocobeecandles.com/discount/SKRIVNIBOZICEK?redirect=%2Fproducts%2Fcoffee-candle",
       img:"kavna-sveca.jpg",imgs:["kavna-sveca.jpg","kavna-sveca-2.jpg"]},
-  1:{partner:true,t:"Alkotester na vaši zabavi",c:"Promilko",
+  1:{partner:true,t:"Alkotester na vaši zabavi",c:"Promilko",since:"15. 11. 2026",
       text:"Avtomat, na katerega gost pihne in v nekaj sekundah vidi svoje promile. Za poroke, veselice, silvestrovanja in novoletne zabave podjetij. S kodo dobite 10 % popusta na osnovni paket — kodo povejte ob povpraševanju.",
       code:"BOZICEK10",url:"https://promilko.si",img:"promilko.jpg"},
   24:{partner:true,t:"Pesem, napisana samo zanj ali zanjo",c:"PesemZaTebe",
@@ -1005,6 +1005,20 @@ const PARTNERS={
   Object.keys(same).forEach(d=>{const g=GIFTS.find(x=>x.t===same[d]);
     if(g)PARTNERS[d]={...g,code:PARTNERS[d].code||g.code,url:PARTNERS[d].url||g.url};});})();
 function partnerDay(c){for(const d in PARTNERS){const p=PARTNERS[d];if(p&&p.t===c.t)return +d;}return 0;}
+function partnerRows(){
+  const rows=[];
+  GIFTS.filter(g=>g.partner).forEach(g=>rows.push({t:g.t,c:g.c,since:g.since||"",day:partnerDay(g),main:true,code:g.code||""}));
+  Object.keys(PARTNERS).forEach(d=>{const p=PARTNERS[d];
+    if(p&&!rows.some(r=>r.t===p.t))rows.push({t:p.t,c:p.c,since:p.since||"",day:+d,main:false,code:p.code||""});});
+  return rows.sort((a,b)=>a.c.localeCompare(b.c,"sl")||a.t.localeCompare(b.t,"sl"));
+}
+function csvSave(name,rows){
+  const q=v=>{v=String(v==null?"":v);return /[";\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v;};
+  const txt="\ufeff"+rows.map(r=>r.map(q).join(";")).join("\r\n");
+  const b=new Blob([txt],{type:"text/csv;charset=utf-8"});
+  const a=document.createElement("a");a.href=URL.createObjectURL(b);a.download=name;
+  document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},800);
+}
 function gotoCal(day){
   closeModal();
   try{history.replaceState(null,"","#koledar");}catch(e){}
@@ -1061,14 +1075,14 @@ function fillModal(c,day){
     $("mShot").innerHTML="";$("mShot").appendChild(galleryEl(c));
     $("mText").textContent=c.text||c.c;setPrice($("mPrice"),c);
     if(c.code&&day){const k=document.createElement("button");k.className="btn";k.type="button";k.textContent="Koda: "+c.code;
-      k.onclick=async()=>{try{await navigator.clipboard.writeText(c.code);k.textContent="Kopirano";}catch(e){}};act.appendChild(k);}
+      k.onclick=async()=>{track("koda-"+c.t,"koledar");try{await navigator.clipboard.writeText(c.code);k.textContent="Kopirano";}catch(e){}};act.appendChild(k);}
     else if(c.code){const pd=partnerDay(c);
       $("mNote").textContent="koda za popust čaka v adventnem koledarju";
       $("mNote").classList.remove("hidden");
       const b=document.createElement("button");b.className="btn";b.type="button";b.textContent="Poglej v koledarju";
       b.onclick=()=>gotoCal(pd);act.appendChild(b);}
     if(c.url){const a=document.createElement("a");a.className="btn k";a.href=c.url;a.target="_blank";a.rel="noopener sponsored";
-      a.textContent="Poglej v trgovini";a.addEventListener("click",()=>track(c.t,"darila"));act.appendChild(a);}
+      a.textContent="Poglej v trgovini";a.addEventListener("click",()=>track(c.t,day?"koledar":"darila"));act.appendChild(a);}
   }
   $("mMark").style.color=c.partner?"var(--green)":"var(--soft)";
   $("modal").classList.remove("hidden");document.documentElement.classList.add("noscroll");$("modal").scrollTop=0;$("mClose").focus();
@@ -1395,9 +1409,67 @@ $("statForm").addEventListener("submit",async e=>{e.preventDefault();
   const doors=cl.filter(c=>c.place==="koledar"),prods=cl.filter(c=>c.place==="darila"),rest=cl.filter(c=>c.place!=="koledar"&&c.place!=="darila");
   sec("Adventni koledar — kolikokrat je bilo odprto posamezno okence","Vsako okence je en dan v decembru. Šteje vsako odpiranje, ne različne obiskovalce.");
   table(["Okence","Datum","Odprtij"],doors.map(c=>{const d=parseInt(String(c.item).replace(/\D/g,""),10)||0;return [d?"Okence "+d:c.item,d?d+". december":"—",c.n];}).sort((a,b)=>b[2]-a[2]),"Nihče še ni odprl nobenega okenca.");
-  sec("Ideje za darila — kliki na izdelke","Kolikokrat je kdo kliknil na izdelek in šel na trgovino partnerja. To je številka, ki jo pokažeš partnerju.");
+  sec("Ideje za darila — surovi zapisi","Zapis \"ogled-izdelek\" pomeni, da je nekdo odprl kartico izdelka, zapis brez predpone pa klik na gumb v trgovino. Urejeno po partnerjih je spodaj.");
   table(["Izdelek","Klikov"],prods.map(c=>[c.item,c.n]),"Nihče še ni kliknil na noben izdelek.");
   if(rest.length){sec("Drugi kliki",null);table(["Kaj","Kje","Število"],rest.map(c=>[c.item,c.place,c.n]));}
+  /* ---- Partnerji ---- */
+  sec("Partnerji","Vse številke posameznega partnerja na enem mestu. Klikni na vrstico za razčlenitev, spodaj pa je izvoz za v mail.");
+  const num=(item,place)=>{const f=cl.find(c=>c.item===item&&c.place===place);return f?f.n:0;};
+  const prows=partnerRows().map(r=>{
+    const open=r.day?num("okence-"+r.day,"koledar"):0, calShop=num(r.t,"koledar"),
+          codes=num("koda-"+r.t,"koledar"), views=num("ogled-"+r.t,"darila"), mainShop=num(r.t,"darila");
+    return Object.assign({},r,{open:open,calShop:calShop,codes:codes,views:views,mainShop:mainShop,shop:calShop+mainShop});
+  });
+  const CSV_HEAD=["Podjetje","Izdelek","Na strani od","Okence","Okence se odpre","Odprtij okenca",
+                  "Klikov v trgovino iz koledarja","Kopiranih kod","Ogledov na začetni strani",
+                  "Klikov v trgovino z začetne strani","Skupaj klikov v trgovino"];
+  const csvRow=r=>[r.c,r.t,r.since||"—",r.day?r.day+". okence":"—",r.day?r.day+". 12. 2026":"—",
+                   r.open,r.calShop,r.codes,r.views,r.mainShop,r.shop];
+  if(!prows.length){out.appendChild(el("p","note","Na strani še ni partnerjev."));}
+  else{
+    const sum=k=>prows.reduce((a,r)=>a+r[k],0);
+    prows.forEach(r=>{
+      const det=document.createElement("details");det.className="drawbox";
+      const s=el("summary");
+      s.append(el("span",null,r.c+" · "+r.t),
+               el("span","dmeta",(r.day?r.day+". december · ":"")+r.shop+" klikov v trgovino"));
+      const body=el("div","dbody");det.append(s,body);out.appendChild(det);
+      const w=el("div","tblwrap"),tb=el("table","tbl"),hr=el("tr");
+      ["Kaj","Koliko"].forEach(h=>hr.appendChild(el("th",null,h)));tb.appendChild(hr);
+      [["Na strani od",r.since||"—"],
+       ["Okence v koledarju",r.day?r.day+". december 2026":"ni okenca"],
+       ["Koda za popust",r.code||"brez kode"],
+       ["Odprtij njegovega okenca",r.open],
+       ["Klikov v trgovino iz koledarja",r.calShop],
+       ["Kopiranih kod",r.codes],
+       ["Ogledov kartice na začetni strani",r.views],
+       ["Klikov v trgovino z začetne strani",r.mainShop],
+       ["Skupaj klikov v trgovino",r.shop]]
+        .forEach(([k,v])=>{const tr=el("tr");tr.append(el("td",null,k),el("td",null,String(v)));tb.appendChild(tr);});
+      w.appendChild(tb);body.appendChild(w);
+      const one=el("button","btn k sm","Izvozi tega partnerja");one.type="button";one.style.margin="12px 0 2px";
+      one.onclick=()=>csvSave("partner-"+r.c.toLowerCase().replace(/[^a-z0-9]+/g,"-")+".csv",[CSV_HEAD,csvRow(r)]);
+      body.appendChild(one);
+    });
+    out.appendChild(el("h2",null,"Skupaj"));
+    const tw=el("div","tblwrap"),tt=el("table","tbl"),th=el("tr");
+    ["Kaj","Koliko"].forEach(h=>th.appendChild(el("th",null,h)));tt.appendChild(th);
+    [["Partnerskih izdelkov na strani",prows.length],
+     ["Odprtij partnerskih okenc",sum("open")],
+     ["Kopiranih kod",sum("codes")],
+     ["Ogledov kartic na začetni strani",sum("views")],
+     ["Klikov v trgovine skupaj",sum("shop")]]
+      .forEach(([k,v])=>{const tr=el("tr");tr.append(el("td",null,k),el("td",null,String(v)));tt.appendChild(tr);});
+    tw.appendChild(tt);out.appendChild(tw);
+    const bar=el("div","saverow");
+    const b1=el("button","btn k sm","Izvozi vse partnerje (CSV)");b1.type="button";
+    b1.onclick=()=>{const rows=[CSV_HEAD].concat(prows.map(csvRow));
+      rows.push(["SKUPAJ","","","","",sum("open"),sum("calShop"),sum("codes"),sum("views"),sum("mainShop"),sum("shop")]);
+      csvSave("partnerji-skrivni-bozicek.csv",rows);};
+    const b2=el("button","btn sm","Izvozi vse klike (CSV)");b2.type="button";
+    b2.onclick=()=>csvSave("vsi-kliki.csv",[["Kaj","Kje","Število"]].concat(cl.map(c=>[c.item,c.place,c.n])));
+    bar.append(b1,b2);out.appendChild(bar);
+  }
   sec("Nova žrebanja po dnevih","Koliko žrebanj je bilo ustvarjenih posamezen dan.");
   table(["Dan","Žrebanj"],(s.days||[]).map(d=>[new Date(d.d+"T12:00:00").toLocaleDateString("sl-SI"),d.n]),"Še ni žrebanj.");
   sec("Seznam žrebanj","Klikni na žrebanje in vidiš udeležence ter njihove želje. Kdo je koga izžrebal, se pokaže šele, ko klikneš gumb.");
