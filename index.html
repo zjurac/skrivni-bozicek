@@ -183,6 +183,9 @@ input:focus,select:focus{outline:none;border-color:var(--ink);box-shadow:0 0 0 3
 .shot.ph svg{width:34px;height:34px;opacity:.55}
 .shot.ph span{font-family:var(--hand);font-size:1.02rem;line-height:1.1;padding:0 12px}
 .sheet .shot{aspect-ratio:4/3;border-radius:6px;background:var(--sand);overflow:hidden;display:grid;place-items:center;margin:2px 0 2px}
+.gift[role=button]{cursor:pointer}
+.gift[role=button]:hover{box-shadow:0 10px 0 -4px rgba(23,19,15,.07)}
+.price s{margin-left:9px;color:var(--soft);font-weight:400;font-size:.86em}
 .gift .pkgs{display:block;font-size:.84rem;line-height:1.35;color:var(--soft);margin-top:8px}
 .gift h4{margin:4px 0 0;font-family:var(--display);font-weight:800;font-size:1.25rem;line-height:1.1;letter-spacing:-.01em}
 .gift .price{font-family:var(--display);font-weight:800;font-size:1.5rem;color:var(--red);margin-top:auto;padding-top:14px;font-variant-numeric:tabular-nums}
@@ -567,7 +570,7 @@ button.paid:hover{background:var(--ink)}
     <div class="tabs" role="group" aria-label="Proračun">
       <button type="button" data-b="15" aria-pressed="false">do 15 €</button>
       <button type="button" data-b="30" aria-pressed="true">do 30 €</button>
-      <button type="button" data-b="50" data-over="1" aria-pressed="false">50 € in več</button>
+      <button type="button" data-b="30" data-over="1" aria-pressed="false">nad 30 €</button>
     </div>
     <div class="gifts" id="giftGrid"></div>
     <p class="note">Vsi izdelki zgoraj so primeri in vsako mesto je prosto. Če imate trgovino, je lahko tukaj vaša fotografija, ime izdelka, cena in povezava &mdash; <button class="tlink" type="button" data-go="podjetja">kako do tega</button>. Mesta pravih partnerjev so označena z zeleno.</p>
@@ -751,6 +754,10 @@ function pickGifts(list,budget,max,over){
   const ok=list.filter(g=>over?g.p>=budget:g.p<=budget);
   return [...ok.filter(g=>g.partner),...ok.filter(g=>!g.partner).sort((a,b)=>over?a.p-b.p:b.p-a.p)].slice(0,max);}
 const priceLbl = g => (g.from?"od ":"")+eur(g.p);
+function setPrice(el,g){
+  el.textContent=g&&g.p?priceLbl(g):"";
+  if(g&&g.p&&g.was){const s=document.createElement("s");s.textContent=eur(g.was);el.appendChild(s);}
+}
 /* Koledar: pred 1. decembrom vse zaprto, v decembru okenca od 1 do današnjega dne, po 24. vsa. */
 function calMode(now){
   /* ?dan=22 odpre koledar do tega dne, da lahko partnerju pokažeš njegovo okence tudi pred decembrom. */
@@ -794,6 +801,12 @@ if(SANTA_PHOTO){const im=new Image();im.alt="Božiček";im.src=SANTA_PHOTO;$("sa
 
 /* Izdelki. partner:true + url = pravi partner. Ostalo so primeri. */
 const GIFTS = [
+  {partner:true,t:"Kavna sveča v keramični skodelici",c:"CocoBee Candles",p:25.90,was:29.90,
+   code:"SKRIVNIBOZICEK",text:"Več kot le sveča – ročno izdelana dišeča sveča iz čebeljega in kokosovega voska z nežno prasketajočim lesenim stenjem, vlita v keramično skodelico. Ko sveča dogori, skodelica ostane za vsakodnevno uporabo – popolno darilo, ki traja dlje od zadnjega plamena. S kodo SKRIVNIBOZICEK je 25,90 € namesto 29,90 €, do 24. decembra.",
+   img:"kavna-sveca.jpg",url:"https://cocobeecandles.com/discount/SKRIVNIBOZICEK?redirect=%2Fproducts%2Fcoffee-candle"},
+  {partner:true,t:"CocoBee Discovery Set",c:"CocoBee Candles",p:39.90,
+   text:"Darilni set treh ročno izdelanih sveč: dišeča sveča Sunset Ritual, sveča iz 100 % čebeljega voska in masažna sveča, ki se stopi v toplo negovalno olje za kožo. Tri različna doživetja v enem darilu – za vse, ki uživajo v majhnih trenutkih sprostitve.",
+   img:"discovery-set.jpg",url:"https://cocobeecandles.com/sl/products/cocobee-discovery-set"},
   {partner:true,t:"Pesem, napisana samo zanj ali zanjo",c:"PesemZaTebe",p:19.99,from:true,
    pkgs:"Standard 19,99 € · Premium 24,99 € · Express 34,99 €",
    img:"pesemzatebe.jpg",url:"https://pesemzatebe.si"},
@@ -818,13 +831,16 @@ function shotEl(img,alt){
   return d;
 }
 function giftCard(g){
-  const el=document.createElement(g.url?"a":"div");el.className="gift";
-  if(g.url){el.href=g.url;el.target="_blank";el.rel="noopener sponsored";el.addEventListener("click",()=>track(g.t,"darila"));}
+  const el=document.createElement("div");el.className="gift";
+  if(g.url){el.setAttribute("role","button");el.tabIndex=0;
+    const open=()=>openGift(g);
+    el.addEventListener("click",open);
+    el.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();open();}});}
   el.innerHTML=`<span class="mark hand ${g.partner?"p":""}">${g.partner?"partner":"tukaj je lahko vaš izdelek"}</span><span class="cat"></span><h4></h4><span class="pkgs"></span><span class="price"></span>`;
   el.insertBefore(shotEl(g.img,g.t),el.querySelector(".cat"));
   el.querySelector(".cat").textContent=g.c;el.querySelector("h4").textContent=g.t;
   const pk=el.querySelector(".pkgs");if(g.pkgs)pk.textContent=g.pkgs;else pk.remove();
-  el.querySelector(".price").textContent=priceLbl(g);
+  setPrice(el.querySelector(".price"),g);
   return el;
 }
 function slotCard(){
@@ -835,7 +851,7 @@ function slotCard(){
 function renderGifts(b,over){
   const grid=$("giftGrid");grid.innerHTML="";
   pickGifts(GIFTS,b,7,over).forEach(g=>grid.appendChild(giftCard(g)));grid.appendChild(slotCard());
-  document.querySelectorAll(".tabs button").forEach(x=>x.setAttribute("aria-pressed",String(+x.dataset.b===b)));
+  document.querySelectorAll(".tabs button").forEach(x=>x.setAttribute("aria-pressed",String(+x.dataset.b===b&&!!x.dataset.over===!!over)));
 }
 document.querySelector(".tabs").addEventListener("click",e=>{const t=e.target.closest("button");if(t&&t.dataset.b)renderGifts(+t.dataset.b,!!t.dataset.over);});
 
@@ -870,6 +886,9 @@ const WIDE=new Set([19,12,6]), FREE=new Set([3,6,9,12,15,18,21]);
 const CODES={5:"ADVENT10",14:"DARILO5"};
 /* Pravi partnerji po dnevih. */
 const PARTNERS={
+  6:{partner:true,t:"Kavna sveča v keramični skodelici",c:"CocoBee Candles",
+      text:"Več kot le sveča – ročno izdelana dišeča sveča iz čebeljega in kokosovega voska z nežno prasketajočim lesenim stenjem, vlita v keramično skodelico. Ko sveča dogori, skodelica ostane za vsakodnevno uporabo – popolno darilo, ki traja dlje od zadnjega plamena. S kodo SKRIVNIBOZICEK je 25,90 € namesto 29,90 €, do 24. decembra.",
+      p:25.90,was:29.90,code:"SKRIVNIBOZICEK",url:"https://cocobeecandles.com/discount/SKRIVNIBOZICEK?redirect=%2Fproducts%2Fcoffee-candle",img:"kavna-sveca.jpg"},
   1:{partner:true,t:"Alkotester na vaši zabavi",c:"Promilko",
       text:"Avtomat, na katerega gost pihne in v nekaj sekundah vidi svoje promile. Za poroke, veselice, silvestrovanja in novoletne zabave podjetij. S kodo dobite 10 % popusta na osnovni paket — kodo povejte ob povpraševanju.",
       code:"BOZICEK10",url:"https://promilko.si",img:"promilko.jpg"},
@@ -905,10 +924,15 @@ function renderDoors(){
     box.appendChild(b);
   });
 }
+function openGift(g){track("ogled-"+g.t,"darila");fillModal(g,null);}
 function openDoor(day){
   opened.add(day);saveOpened();renderDoors();track("okence-"+day,"koledar");
-  const c=doorContent(day),act=$("mActions");act.innerHTML="";
-  $("mDay").textContent=day;
+  fillModal(doorContent(day),day);
+}
+function fillModal(c,day){
+  const act=$("mActions");act.innerHTML="";
+  const dd=$("mDay");
+  if(day){dd.textContent=day;dd.classList.remove("hidden");}else{dd.textContent="";dd.classList.add("hidden");}
   if(c.free){
     $("mMark").textContent="še prosto";$("mTitle").textContent="To okence čaka na trgovino";
     $("mShot").innerHTML="";$("mShot").appendChild(shotEl(null,""));
@@ -917,10 +941,11 @@ function openDoor(day){
   }else{
     $("mMark").textContent=c.partner?"partner · "+c.c:"tukaj je lahko vaš izdelek";$("mTitle").textContent=c.t;
     $("mShot").innerHTML="";$("mShot").appendChild(shotEl(c.img,c.t));
-    $("mText").textContent=c.text||c.c;$("mPrice").textContent=c.p?eur(c.p):"";
+    $("mText").textContent=c.text||c.c;setPrice($("mPrice"),c);
     if(c.code){const k=document.createElement("button");k.className="btn";k.type="button";k.textContent="Koda: "+c.code;
       k.onclick=async()=>{try{await navigator.clipboard.writeText(c.code);k.textContent="Kopirano";}catch(e){}};act.appendChild(k);}
-    if(c.url){const a=document.createElement("a");a.className="btn k";a.href=c.url;a.target="_blank";a.rel="noopener";a.textContent="Poglej";act.appendChild(a);}
+    if(c.url){const a=document.createElement("a");a.className="btn k";a.href=c.url;a.target="_blank";a.rel="noopener sponsored";
+      a.textContent="Poglej v trgovini";a.addEventListener("click",()=>track(c.t,"darila"));act.appendChild(a);}
   }
   $("mMark").style.color=c.partner?"var(--green)":"var(--soft)";
   $("modal").classList.remove("hidden");$("mClose").focus();
