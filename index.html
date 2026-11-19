@@ -208,7 +208,9 @@ input:focus,select:focus{outline:none;border-color:var(--ink);box-shadow:0 0 0 3
 .warnsave{margin:10px 0 0;font-size:.92rem;line-height:1.45;background:#fff4d6;border:1.5px solid var(--ink);border-radius:7px;padding:9px 12px}
 .saverow{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:14px}
 .saverow .note{margin:0;flex:1 1 220px}
-.livecount{margin:14px 0 0;font-family:var(--hand);font-size:1.25rem;color:#fff}
+.livecount{display:inline-flex;align-items:center;gap:10px;justify-self:start;align-self:start;width:fit-content;margin:18px 0 0;padding:8px 15px 9px;background:var(--yellow);color:var(--ink);border:1.5px solid var(--ink);border-radius:8px;box-shadow:2px 2px 0 rgba(23,19,15,.3);font-family:var(--hand);font-size:1.3rem;line-height:1.05;transform:rotate(-1deg)}
+.livecount::before{content:"";width:11px;height:11px;border-radius:50%;background:var(--green);box-shadow:0 0 0 3px rgba(15,74,55,.2)}
+@media (max-width:540px){.livecount{font-size:1.18rem;margin-top:15px}}
 .flagrow{display:flex;gap:10px;align-items:center;margin-top:26px;font-weight:600;cursor:pointer}
 .flagrow input{width:auto;margin:0}
 .price .wcode{display:block;margin-top:3px;font-family:var(--hand);font-style:normal;font-weight:400;font-size:.72em;line-height:1;color:var(--red)}
