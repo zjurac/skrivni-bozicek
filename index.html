@@ -282,6 +282,10 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between}
 .rfacts div{display:grid;grid-template-columns:120px 1fr;gap:10px;padding:12px 0;border-top:1.5px solid var(--rule)}
 .rfacts span{color:var(--soft);font-size:.9rem}
 .rv-g{background:var(--paper);border:1.5px solid var(--ink);border-radius:10px;padding:22px}
+.rv-g #rvAllGifts{margin-top:14px}
+.rv-g li.click{cursor:pointer;align-items:center}
+.rv-g li.click:hover{background:var(--sand)}
+.rv-g li.click .go{font-family:var(--hand);color:var(--green);font-size:.95rem;display:block;margin-top:2px}
 .rv-g ul{list-style:none;margin:10px 0 0;padding:0}
 .rv-g li{display:flex;justify-content:space-between;gap:12px;padding:11px 0;border-top:1.5px solid var(--rule)}
 .rv-g li b{font-family:var(--display);color:var(--red);white-space:nowrap}
@@ -782,6 +786,7 @@ html.noscroll{overscroll-behavior:none}
     <div class="rv-g hidden" id="rvGifts">
       <h3 id="rvGiftsTitle"></h3>
       <ul id="rvGiftList"></ul>
+      <button class="btn sm" id="rvAllGifts" type="button">Vse ideje za darila</button>
     </div>
     <div class="rv-g hidden" id="rvExtra">
       <div id="wishBox">
@@ -923,10 +928,10 @@ function shotEl(img,alt){
   else{d.classList.add("ph");d.innerHTML=PH_ICON+'<span>prostor za vašo fotografijo</span>';}
   return d;
 }
-function giftCard(g){
+function giftCard(g,place){
   const el=document.createElement("div");el.className="gift";
   if(g.url){el.setAttribute("role","button");el.tabIndex=0;
-    const open=()=>openGift(g);
+    const open=()=>openGift(g,place);
     el.addEventListener("click",open);
     el.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();open();}});}
   el.innerHTML=`<span class="mark hand ${g.partner?"p":""}">${g.partner?"partner · "+g.c:"tukaj je lahko vaš izdelek"}</span><span class="cat"></span><h4></h4><span class="pkgs"></span><span class="price"></span>`;
@@ -1055,7 +1060,8 @@ function renderDoors(){
     box.appendChild(b);
   });
 }
-function openGift(g){track("ogled-"+g.t,"darila");fillModal(g,null);}
+let giftPlace="darila";
+function openGift(g,place){giftPlace=place||"darila";track("ogled-"+g.t,giftPlace);fillModal(g,null);}
 function openDoor(day){
   opened.add(day);saveOpened();renderDoors();track("okence-"+day,"koledar");
   fillModal(doorContent(day),day);
@@ -1082,7 +1088,7 @@ function fillModal(c,day){
       const b=document.createElement("button");b.className="btn";b.type="button";b.textContent="Poglej v koledarju";
       b.onclick=()=>gotoCal(pd);act.appendChild(b);}
     if(c.url){const a=document.createElement("a");a.className="btn k";a.href=c.url;a.target="_blank";a.rel="noopener sponsored";
-      a.textContent="Poglej v trgovini";a.addEventListener("click",()=>track(c.t,day?"koledar":"darila"));act.appendChild(a);}
+      a.textContent="Poglej v trgovini";a.addEventListener("click",()=>track(c.t,day?"koledar":giftPlace));act.appendChild(a);}
   }
   $("mMark").style.color=c.partner?"var(--green)":"var(--soft)";
   $("modal").classList.remove("hidden");document.documentElement.classList.add("noscroll");$("modal").scrollTop=0;$("mClose").focus();
@@ -1341,10 +1347,21 @@ function showReveal(t,token){
   if(t.b)add("Proračun","do "+t.b+" €");
   if(t.d){const dt=new Date(t.d+"T12:00:00");if(!isNaN(dt))add("Izmenjava",dt.toLocaleDateString("sl-SI",{weekday:"long",day:"numeric",month:"long"}));}
   const b=+t.b||20,ul=$("rvGiftList");ul.innerHTML="";
-  const picks=pickGifts(GIFTS,b,3);
-  picks.forEach(g=>{const li=document.createElement("li");const l=document.createElement("span");l.textContent=g.t;
-    const sm=document.createElement("small");sm.textContent=g.c+(g.partner?"":" · prosto mesto");l.appendChild(sm);
-    const pr=document.createElement("b");pr.textContent=priceLbl(g);li.append(l,pr);ul.appendChild(li);});
+  /* v pogledu žreba pokažemo samo prave izdelke s povezavo */
+  const real=GIFTS.filter(g=>g.partner&&g.url);
+  let picks=real.filter(g=>g.p&&g.p<=b).sort((x,y)=>y.p-x.p).slice(0,3);
+  if(!picks.length)picks=real.slice(0,3);
+  picks.forEach(g=>{
+    const li=document.createElement("li");li.className="click";li.setAttribute("role","button");li.tabIndex=0;
+    const l=document.createElement("span");l.textContent=g.t;
+    const sm=document.createElement("small");sm.textContent=g.c;l.appendChild(sm);
+    const go=document.createElement("span");go.className="go";go.textContent="poglej \u2192";l.appendChild(go);
+    const pr=document.createElement("b");pr.textContent=priceLbl(g);
+    li.append(l,pr);
+    const open=()=>openGift(g,"zrebanje");
+    li.addEventListener("click",open);
+    li.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();open();}});
+    ul.appendChild(li);});
   $("rvGiftsTitle").textContent=`Nekaj idej do ${b} €`;
   $("rvGifts").dataset.has=picks.length?"1":"";
   $("rvClosed").classList.remove("hidden");$("rvOpened").classList.add("hidden");$("rvGifts").classList.add("hidden");
@@ -1417,14 +1434,15 @@ $("statForm").addEventListener("submit",async e=>{e.preventDefault();
   const num=(item,place)=>{const f=cl.find(c=>c.item===item&&c.place===place);return f?f.n:0;};
   const prows=partnerRows().map(r=>{
     const open=r.day?num("okence-"+r.day,"koledar"):0, calShop=num(r.t,"koledar"),
-          codes=num("koda-"+r.t,"koledar"), views=num("ogled-"+r.t,"darila"), mainShop=num(r.t,"darila");
-    return Object.assign({},r,{open:open,calShop:calShop,codes:codes,views:views,mainShop:mainShop,shop:calShop+mainShop});
+          codes=num("koda-"+r.t,"koledar"), views=num("ogled-"+r.t,"darila")+num("ogled-"+r.t,"zrebanje"),
+          mainShop=num(r.t,"darila"), drawShop=num(r.t,"zrebanje");
+    return Object.assign({},r,{open:open,calShop:calShop,codes:codes,views:views,mainShop:mainShop,drawShop:drawShop,shop:calShop+mainShop+drawShop});
   });
   const CSV_HEAD=["Podjetje","Izdelek","Na strani od","Okence","Okence se odpre","Odprtij okenca",
                   "Klikov v trgovino iz koledarja","Kopiranih kod","Ogledov na začetni strani",
-                  "Klikov v trgovino z začetne strani","Skupaj klikov v trgovino"];
+                  "Klikov v trgovino z začetne strani","Klikov v trgovino iz žrebanja","Skupaj klikov v trgovino"];
   const csvRow=r=>[r.c,r.t,r.since||"—",r.day?r.day+". okence":"—",r.day?r.day+". 12. 2026":"—",
-                   r.open,r.calShop,r.codes,r.views,r.mainShop,r.shop];
+                   r.open,r.calShop,r.codes,r.views,r.mainShop,r.drawShop,r.shop];
   if(!prows.length){out.appendChild(el("p","note","Na strani še ni partnerjev."));}
   else{
     const sum=k=>prows.reduce((a,r)=>a+r[k],0);
@@ -1444,6 +1462,7 @@ $("statForm").addEventListener("submit",async e=>{e.preventDefault();
        ["Kopiranih kod",r.codes],
        ["Ogledov kartice na začetni strani",r.views],
        ["Klikov v trgovino z začetne strani",r.mainShop],
+       ["Klikov v trgovino iz žrebanja",r.drawShop],
        ["Skupaj klikov v trgovino",r.shop]]
         .forEach(([k,v])=>{const tr=el("tr");tr.append(el("td",null,k),el("td",null,String(v)));tb.appendChild(tr);});
       w.appendChild(tb);body.appendChild(w);
@@ -1458,13 +1477,14 @@ $("statForm").addEventListener("submit",async e=>{e.preventDefault();
      ["Odprtij partnerskih okenc",sum("open")],
      ["Kopiranih kod",sum("codes")],
      ["Ogledov kartic na začetni strani",sum("views")],
+     ["Klikov v trgovino iz žrebanj",sum("drawShop")],
      ["Klikov v trgovine skupaj",sum("shop")]]
       .forEach(([k,v])=>{const tr=el("tr");tr.append(el("td",null,k),el("td",null,String(v)));tt.appendChild(tr);});
     tw.appendChild(tt);out.appendChild(tw);
     const bar=el("div","saverow");
     const b1=el("button","btn k sm","Izvozi vse partnerje (CSV)");b1.type="button";
     b1.onclick=()=>{const rows=[CSV_HEAD].concat(prows.map(csvRow));
-      rows.push(["SKUPAJ","","","","",sum("open"),sum("calShop"),sum("codes"),sum("views"),sum("mainShop"),sum("shop")]);
+      rows.push(["SKUPAJ","","","","",sum("open"),sum("calShop"),sum("codes"),sum("views"),sum("mainShop"),sum("drawShop"),sum("shop")]);
       csvSave("partnerji-skrivni-bozicek.csv",rows);};
     const b2=el("button","btn sm","Izvozi vse klike (CSV)");b2.type="button";
     b2.onclick=()=>csvSave("vsi-kliki.csv",[["Kaj","Kje","Število"]].concat(cl.map(c=>[c.item,c.place,c.n])));
@@ -1542,6 +1562,7 @@ addEventListener("hashchange",route);
     s.style.left=(Math.random()*100)+"%";s.style.fontSize=(10+Math.random()*16)+"px";s.style.opacity=.35+Math.random()*.5;
     s.style.animationDuration=(9+Math.random()*10)+"s";s.style.animationDelay=(-Math.random()*18)+"s";box.appendChild(s);}});
 })();
+$("rvAllGifts").onclick=()=>{go("darila");};
 loadDraft();renderPeople();renderGifts(30);route();
 {const sid=QS.get("placilo")||"";if(/^cs_(test|live)_[A-Za-z0-9]+$/.test(sid))claimPayment(sid);}
 </script>
