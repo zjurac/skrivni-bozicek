@@ -906,8 +906,12 @@ const GIFTS = [
    text:"Darilni set treh ročno izdelanih sveč: dišeča sveča Sunset Ritual, sveča iz 100 % čebeljega voska in masažna sveča, ki se stopi v toplo negovalno olje za kožo. Tri različna doživetja v enem darilu – za vse, ki uživajo v majhnih trenutkih sprostitve.",
    img:"discovery-set.jpg",imgs:["discovery-set.jpg","discovery-set-2.jpg"],url:"https://cocobeecandles.com/sl/products/cocobee-discovery-set"},
   {partner:true,t:"Pesem, napisana samo zanj ali zanjo",c:"PesemZaTebe",p:19.99,from:true,since:"15. 11. 2026",
+   code:"BOZICEK10",
    pkgs:"Standard 19,99 € · Premium 24,99 € · Express 34,99 €",
    img:"pesemzatebe.jpg",url:"https://pesemzatebe.si"},
+  {partner:true,t:"Cvetovi na ušesih",c:"LoNu Design",p:16,since:"26. 11. 2026",
+   code:"DARILO",text:"Ročno izdelani uhani iz polimerne mase, lažji kot bančna kartica – na ušesu jih sploh ne čutiš, pa jih vseeno vsi opazijo. Kovinski deli so iz nerjavečega jekla, zato ne dražijo. Za vsak dan, za praznike in za darilo – za poroke, rojstne dneve in decembrska druženja.",
+   img:"lonu-uhani.jpg",url:"https://www.lonu-design.si/izdelek/cvetovi-na-usesih"},
   {t:"Domač cvetlični med z orehi",p:8,c:"Sladko"},
   {t:"Čokoladne praline, 12 kosov",p:9,c:"Sladko"},
   {t:"Sveže pražena kava, 250 g",p:10,c:"Kava"},
@@ -990,25 +994,50 @@ document.addEventListener("click",e=>{
 
 /* Adventni koledar */
 const ORDER=[7,19,2,14,23,10,5,21,12,1,17,8,24,3,15,20,6,11,22,4,16,9,13,18];
-const WIDE=new Set([19,12,6]), FREE=new Set([3,6,9,12,15,18,21]);
-const CODES={5:"ADVENT10",14:"DARILO5"};
+const WIDE=new Set([19,12,6]), FREE=new Set([12,15,18,21]);
+const CODES={};
 /* Pravi partnerji po dnevih. */
+/* Okenca brez partnerja: nasvet dneva. */
+const TIPS={
+  2:{t:"Kako napisati \u017eeljo, da res dobi\u0161, kar si \u017eeli\u0161",
+     text:"Najslab\u0161a \u017eelja je \u201ekarkoli\u201c. Napi\u0161i dve ali tri stvari, ki jih ima\u0161 rad, in eno, ki je ne mara\u0161 \u2014 tisti, ki te je iz\u017erebal, ti bo hvale\u017een. Pri \u017erebanju vsak zapi\u0161e svojo \u017eeljo in vidi jo samo tisti, ki mu kupuje darilo.",
+     btn:"Za\u010dni \u017erebanje",go:"zrebanje"},
+  4:{t:"Koliko naj stane darilo?",
+     text:"Dogovor o znesku je edino pravilo, ki ga skupina res potrebuje. Najpogostej\u0161i razpon je med 15 in 30 evri \u2014 dovolj, da darilo ni prazno, in dovolj malo, da nikomur ni nerodno. Znesek dolo\u010di vnaprej in ga zapi\u0161i v povabilo.",
+     btn:"Ideje za darila",go:"darila"},
+  5:{t:"Vpra\u0161aj, ne da bi se izdal",
+     text:"Ne ve\u0161, kaj kupiti osebi, ki si jo iz\u017erebal? Z anonimnimi vpra\u0161anji ji lahko po\u0161lje\u0161 vpra\u0161anje, ona pa odgovori, ne da bi vedela, kdo spra\u0161uje. Na voljo je v paketu Premium.",
+     btn:"Poglej pakete",go:"paketi"},
+  7:{t:"Darilo za sodelavca, ki ga komaj pozna\u0161",
+     text:"Kadar o \u010dloveku ne ve\u0161 ni\u010d, izberi nekaj, kar se porabi: kavo, \u010dokolado, sve\u010do, kozmetiko. Takega darila ni treba nikamor pospraviti in nih\u010de ga ne vra\u010da. Osebne stvari \u2014 obla\u010dila, parfum, okraske \u2014 pusti za tiste, ki jih dobro pozna\u0161.",
+     btn:"Ideje za darila",go:"darila"},
+  8:{t:"Dva, ki se ne smeta iz\u017erebati",
+     text:"Pari, bratje in sestre ali sostanovalci si darila pogosto kupujejo \u017ee tako. Pri \u017erebanju lahko nastavi\u0161 izjeme in dolo\u010dena dva se ne moreta iz\u017erebati med sabo. Vse ostalo zme\u0161a ra\u010dunalnik, tako da nih\u010de ne ve, kdo komu kupuje \u2014 tudi ti ne.",
+     btn:"Za\u010dni \u017erebanje",go:"zrebanje"},
+  24:{mark:"zadnje okence",t:"Vesel bo\u017ei\u010d",
+     text:"\u010ce je letos pod drevesom pristalo darilo, ki je nekoga nasmejalo, je koledar opravil svoje. Hvala, ker si ga odpiral vse od prvega decembra.",
+     btn:"Ideje za darila",go:"darila"}
+};
 const PARTNERS={
-  6:{partner:true,t:"Kavna sveča v keramični skodelici",c:"CocoBee Candles",
-      text:"Več kot le sveča – ročno izdelana dišeča sveča iz čebeljega in kokosovega voska z nežno prasketajočim lesenim stenjem, vlita v keramično skodelico. Ko sveča dogori, skodelica ostane za vsakodnevno uporabo – popolno darilo, ki traja dlje od zadnjega plamena. S kodo SKRIVNIBOZICEK je 25,90 € namesto 29,90 €, do 24. decembra.",
+  1:{partner:true,t:"Alkotester na va\u0161i zabavi",c:"Promilko",since:"15. 11. 2026",
+      text:"Avtomat, na katerega gost pihne in v nekaj sekundah vidi svoje promile. Za poroke, veselice, silvestrovanja in novoletne zabave podjetij. S kodo dobite 10 % popusta na osnovni paket \u2014 kodo povejte ob povpra\u0161evanju.",
+      code:"BOZICEK10",url:"https://promilko.si",img:"promilko.jpg"},
+  3:{partner:true,t:"Pesem, napisana samo zanj ali zanjo",c:"PesemZaTebe",since:"15. 11. 2026",
+      text:"Personalizirana pesem po va\u0161i zgodbi, posneta in poslana v MP3, besedilo pa v PDF. Standard 19,99 \u20ac, Premium 24,99 \u20ac, Express 34,99 \u20ac. S kodo BOZICEK10 dobi\u0161 10 % popusta na paketa Premium in Express.",
+      code:"BOZICEK10",url:"https://pesemzatebe.si",img:"pesemzatebe.jpg"},
+  6:{partner:true,t:"Kavna sve\u010da v kerami\u010dni skodelici",c:"CocoBee Candles",
+      text:"Ve\u010d kot le sve\u010da \u2013 ro\u010dno izdelana di\u0161e\u010da sve\u010da iz \u010debeljega in kokosovega voska z ne\u017eno prasketajo\u010dim lesenim stenjem, vlita v kerami\u010dno skodelico. Ko sve\u010da dogori, skodelica ostane za vsakodnevno uporabo \u2013 popolno darilo, ki traja dlje od zadnjega plamena. S kodo SKRIVNIBOZICEK je 25,90 \u20ac namesto 29,90 \u20ac, do 24. decembra.",
       p:25.90,was:29.90,code:"SKRIVNIBOZICEK",url:"https://cocobeecandles.com/discount/SKRIVNIBOZICEK?redirect=%2Fproducts%2Fcoffee-candle",
       img:"kavna-sveca.jpg",imgs:["kavna-sveca.jpg","kavna-sveca-2.jpg"]},
-  1:{partner:true,t:"Alkotester na vaši zabavi",c:"Promilko",since:"15. 11. 2026",
-      text:"Avtomat, na katerega gost pihne in v nekaj sekundah vidi svoje promile. Za poroke, veselice, silvestrovanja in novoletne zabave podjetij. S kodo dobite 10 % popusta na osnovni paket — kodo povejte ob povpraševanju.",
-      code:"BOZICEK10",url:"https://promilko.si",img:"promilko.jpg"},
-  24:{partner:true,t:"Pesem, napisana samo zanj ali zanjo",c:"PesemZaTebe",
-      text:"Personalizirana pesem po vaši zgodbi, posneta in poslana v MP3, besedilo pa v PDF. Standard 19,99 €, Premium 24,99 €, Express 34,99 €.",
-      url:"https://pesemzatebe.si",img:"pesemzatebe.jpg"}
+  9:{partner:true,t:"Cvetovi na u\u0161esih",c:"LoNu Design",since:"26. 11. 2026",
+      text:"Ro\u010dno izdelani uhani iz polimerne mase, la\u017eji kot ban\u010dna kartica \u2013 na u\u0161esu jih sploh ne \u010duti\u0161, pa jih vseeno vsi opazijo. Kovinski deli so iz nerjave\u010dega jekla, zato ne dra\u017eijo. Za vsak dan, za praznike in za darilo \u2013 za poroke, rojstne dneve in decembrska dru\u017eenja. S kodo DARILO dobi\u0161 10 % popusta.",
+      p:16,code:"DARILO",url:"https://www.lonu-design.si/izdelek/cvetovi-na-usesih",
+      img:"lonu-uhani.jpg"}
 };
 /* vrata v koledarju kazejo isto kot kartica na zacetni strani */
-(function(){const same={6:"Kavna sveča v keramični skodelici",24:"Pesem, napisana samo zanj ali zanjo"};
+(function(){const same={6:"Kavna sveča v keramični skodelici",3:"Pesem, napisana samo zanj ali zanjo",9:"Cvetovi na ušesih"};
   Object.keys(same).forEach(d=>{const g=GIFTS.find(x=>x.t===same[d]);
-    if(g)PARTNERS[d]={...g,code:PARTNERS[d].code||g.code,url:PARTNERS[d].url||g.url};});})();
+    if(g)PARTNERS[d]={...g,code:PARTNERS[d].code||g.code,url:PARTNERS[d].url||g.url,text:PARTNERS[d].text||g.text};});})();
 function partnerDay(c){for(const d in PARTNERS){const p=PARTNERS[d];if(p&&p.t===c.t)return +d;}return 0;}
 function partnerRows(){
   const rows=[];
@@ -1034,6 +1063,7 @@ function gotoCal(day){
 }
 function doorContent(day){
   if(PARTNERS[day])return PARTNERS[day];
+  if(TIPS[day])return {tip:true,...TIPS[day]};
   if(FREE.has(day))return {free:true};
   const g=GIFTS[(day*4)%GIFTS.length];return {...g,code:CODES[day]};
 }
@@ -1071,7 +1101,13 @@ function fillModal(c,day){
   $("mNote").textContent="";$("mNote").classList.add("hidden");
   const dd=$("mDay");
   if(day){dd.textContent=day;dd.classList.remove("hidden");}else{dd.textContent="";dd.classList.add("hidden");}
-  if(c.free){
+  if(c.tip){
+    $("mMark").textContent=c.mark||"nasvet dneva";$("mTitle").textContent=c.t;
+    $("mShot").innerHTML="";
+    $("mText").textContent=c.text;$("mPrice").textContent="";
+    if(c.go){const b=document.createElement("button");b.className="btn k";b.type="button";b.textContent=c.btn;
+      b.onclick=()=>{closeModal();go(c.go);};act.appendChild(b);}
+  }else if(c.free){
     $("mMark").textContent="še prosto";$("mTitle").textContent="To okence čaka na trgovino";
     $("mShot").innerHTML="";$("mShot").appendChild(shotEl(null,""));
     $("mText").textContent="Na ta dan je lahko vaš izdelek edini, ki ga obiskovalci odprejo.";$("mPrice").textContent="";
