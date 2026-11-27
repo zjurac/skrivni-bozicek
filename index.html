@@ -1297,6 +1297,7 @@ $("drawBtn").onclick=async()=>{
     const out=await rpc("create_draw",{p_name:meta.n,p_budget:meta.b,p_date:meta.d,p_people:names.map(n=>({name:n,wish:wishes[n]||""})),p_pairs:res,p_code:state.code||null,
       p_logo:state.plan==="plus"&&state.logo?state.logo:null,p_color:state.plan==="plus"?$("brandColor").value:null});
     if(out&&out.error){const x=new Error(out.error);x.code=out.error;x.server=true;throw x;}
+    track("izjem-"+state.excl.length,"zreb");
     links={};out.links.forEach(l=>{links[l.name]=base+"#"+l.token;});
     if(state.code){state.code="";state.plan="free";MAX_FREE=15;MAX_EXCL_FREE=1;$("pCode").value="";$("pMsg").textContent="Koda je porabljena za to žrebanje.";
       state.logo="";$("brandBox").classList.add("hidden");$("logoPrev").classList.add("hidden");$("logoFile").value="";}
@@ -1488,11 +1489,18 @@ $("statForm").addEventListener("submit",async e=>{e.preventDefault();
     const w=el("div","tblwrap"),tb=el("table","tbl"),hr=el("tr");head.forEach(h=>hr.appendChild(el("th",null,h)));tb.appendChild(hr);
     rows.forEach(r=>{const tr=el("tr");r.forEach(c=>tr.appendChild(el("td",null,String(c))));tb.appendChild(tr);});w.appendChild(tb);out.appendChild(w);};
   const cl=s.clicks||[];
-  const doors=cl.filter(c=>c.place==="koledar"),prods=cl.filter(c=>c.place==="darila"),rest=cl.filter(c=>c.place!=="koledar"&&c.place!=="darila");
+  const doors=cl.filter(c=>c.place==="koledar"),prods=cl.filter(c=>c.place==="darila"),
+        excs=cl.filter(c=>c.place==="zreb"&&/^izjem-/.test(c.item)),
+        rest=cl.filter(c=>c.place!=="koledar"&&c.place!=="darila"&&c.place!=="zreb");
   sec("Adventni koledar — kolikokrat je bilo odprto posamezno okence","Vsako okence je en dan v decembru. Šteje vsako odpiranje, ne različne obiskovalce.");
   table(["Okence","Datum","Odprtij"],doors.map(c=>{const d=parseInt(String(c.item).replace(/\D/g,""),10)||0;return [d?"Okence "+d:c.item,d?d+". december":"—",c.n];}).sort((a,b)=>b[2]-a[2]),"Nihče še ni odprl nobenega okenca.");
   sec("Ideje za darila — surovi zapisi","Zapis \"ogled-izdelek\" pomeni, da je nekdo odprl kartico izdelka, zapis brez predpone pa klik na gumb v trgovino. Urejeno po partnerjih je spodaj.");
   table(["Izdelek","Klikov"],prods.map(c=>[c.item,c.n]),"Nihče še ni kliknil na noben izdelek.");
+  /* Izjeme: ob vsakem zrebu zabelezimo samo stevilo izjem, nikoli imen. */
+  {const rows=excs.map(c=>[parseInt(c.item.slice(6),10)||0,c.n]).sort((a,b)=>a[0]-b[0]);
+   const withExcl=rows.filter(r=>r[0]>0).reduce((s,r)=>s+r[1],0), all=rows.reduce((s,r)=>s+r[1],0);
+   sec("Izjeme pri žrebanju","Koliko izjem so skupine nastavile, torej koliko parov se ni smelo izžrebati med sabo. Imen ne hranimo, samo število. Šteje se od 27. novembra naprej."+(all?" Doslej je imelo izjemo "+withExcl+" od "+all+" žrebanj.":""));
+   table(["Izjem v žrebanju","Žrebanj"],rows.map(r=>[r[0]?r[0]:"brez izjem",r[1]]),"Še ni podatkov — število izjem se beleži od 27. novembra naprej.");}
   if(rest.length){sec("Drugi kliki",null);table(["Kaj","Kje","Število"],rest.map(c=>[c.item,c.place,c.n]));}
   /* ---- Partnerji ---- */
   sec("Partnerji","Vse številke posameznega partnerja na enem mestu. Klikni na vrstico za razčlenitev, spodaj pa je izvoz za v mail.");
